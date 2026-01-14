@@ -6,7 +6,7 @@ function App() {
     <div
       className="min-h-screen flex flex-col justify-between px-4 font-bold"
       style={{
-        backgroundImage: "url(/public/bg.svg)",
+        backgroundImage: "url(/bg.svg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

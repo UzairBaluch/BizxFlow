@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@font-face {
+  font-family: "PolySans";
+  src: url("./assets/fonts/polysansitalictrial-bulkyitalic.otf")
+    format("opentype");
+  font-weight: bold;
+  font-style: italic;
+}

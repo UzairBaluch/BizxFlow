@@ -1,9 +1,10 @@
+import Layout from "../components/layout/Layout";
 function Sales() {
   return (
-    <div>
+    <Layout>
       <h1>Sales</h1>
       <p>Make sales here</p>
-    </div>
+    </Layout>
   )
 }
 

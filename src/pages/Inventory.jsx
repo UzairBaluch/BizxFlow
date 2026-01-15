@@ -1,9 +1,11 @@
+import Layout from "../components/layout/Layout";
+
 function Inventory() {
   return (
-    <div>
+    <Layout>
       <h1>Inventory</h1>
       <p>Manage inventory here</p>
-    </div>
+    </Layout>
   );
 }
 

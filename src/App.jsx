@@ -14,6 +14,7 @@ import Reports from "./pages/Reports.jsx";
 import Pos from "./pages/Pos.jsx";
 
 const App = () => {
+  
   return (
     <div>
       <Routes>

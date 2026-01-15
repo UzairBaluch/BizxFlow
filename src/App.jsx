@@ -1,7 +1,28 @@
 import logo from "./assets/nobg.png";
 import { FaXTwitter, FaInstagram, FaGithub } from "react-icons/fa6";
+import { useState } from "react";
 
 function App() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch("https://formspree.io/f/mojjvlyy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (response.ok) {
+      setStatus("Thanks! Youre on the waitlist!");
+      setEmail("");
+    } else {
+      setStatus("Error. Try again.");
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col justify-between px-4 font-bold"
@@ -36,7 +57,7 @@ function App() {
         </p>
 
         <p
-          className="text-lg mb-12 leading-relaxed opacity-55"
+          className="text-md mb-12 leading-relaxed opacity-55 font-light"
           style={{ fontFamily: "PolySans-neutral, sans-serif" }}
         >
           Transform your retail operations with intelligent insights. Sales
@@ -44,12 +65,31 @@ function App() {
           analytics - powered by AI, simplified for small businesses.
         </p>
 
-        <button
-          className="bg-white text-[#6B9FED] px-12 py-4 rounded-lg text-xl font-bold hover:bg-opacity-90 transition-all"
-          style={{ fontFamily: "PolySans-neutral, sans-serif" }}
+        <form
+          onSubmit={handleSubmit}
+          className="flex justify-center gap-4 mb-8"
         >
-          Join Waitlist
-        </button>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+            className="px-6 py-3 rounded-lg text-white w-80 focus:outline-none"
+            style={{
+              fontFamily: "PolySans-neutral, sans-serif",
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+            }}
+          />
+          <button
+            type="submit"
+            className="bg-white text-[#6B9FED] px-12 py-4 rounded-lg text-xl font-bold hover:bg-opacity-90 transition-all"
+            style={{ fontFamily: "PolySans-neutral, sans-serif" }}
+          >
+            Join Waitlist
+          </button>
+        </form>
+        {status && <p className="text-white mb-4">{status}</p>}
       </div>
 
       <div className="pb-4">

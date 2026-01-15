@@ -7,6 +7,7 @@ import {
 } from "react-icons/md";
 
 import {
+  FaCashRegister, // POs
   FaBox, // Products
   FaMoneyBill, // Sales
   FaUsers, // Customers
@@ -33,6 +34,14 @@ function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4">
+        <Link
+          to="/pos"
+          className="flex items-center gap-3 text-white p-3 rounded-lg hover:bg-white/20 mb-2"
+        >
+          <FaCashRegister size={20} />
+          <span>Pos</span>
+        </Link>
+
         <Link
           to="/dashboard"
           className="flex items-center gap-3 text-white p-3 rounded-lg hover:bg-white/20 mb-2"
@@ -78,7 +87,7 @@ function Sidebar() {
           <FaUsers size={20} />
           <span>Customers</span>
         </Link>
-          <Link
+        <Link
           to="/expenses"
           className="flex items-center gap-3 text-white p-3 rounded-lg hover:bg-white/20 mb-2"
         >

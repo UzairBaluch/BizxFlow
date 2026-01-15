@@ -11,12 +11,14 @@ import Profile from "./pages/Profile.jsx";
 import Employees from "./pages/Employees.jsx";
 import Expenses from "./pages/Expenses.jsx";
 import Reports from "./pages/Reports.jsx";
+import Pos from "./pages/Pos.jsx";
 
 const App = () => {
   return (
     <div>
       <Routes>
         <Route path="/" element={<Landing />} />
+          <Route path="/pos" element={<Pos />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
         <Route path="/sales" element={<Sales />} />

@@ -67,7 +67,7 @@ function App() {
 
         <form
           onSubmit={handleSubmit}
-          className="flex justify-center gap-4 mb-8"
+          className="flex justify-center gap-4 mb-8 flex-col sm:flex-row px-4"
         >
           <input
             type="email"
@@ -75,7 +75,7 @@ function App() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             required
-            className="px-6 py-3 rounded-lg text-white w-80 focus:outline-none"
+            className="px-6 py-3 rounded-lg text-white w-80 focus:outline-none w-full sm:w-80 "
             style={{
               fontFamily: "PolySans-neutral, sans-serif",
               backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -83,7 +83,7 @@ function App() {
           />
           <button
             type="submit"
-            className="bg-white text-[#6B9FED] px-12 py-4 rounded-lg text-xl font-bold hover:bg-opacity-90 transition-all"
+            className="bg-white text-[#6B9FED] px-12 py-4 rounded-lg text-xl font-bold hover:bg-opacity-90 transition-all whitespace-nowrap"
             style={{ fontFamily: "PolySans-neutral, sans-serif" }}
           >
             Join Waitlist

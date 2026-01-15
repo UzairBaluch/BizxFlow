@@ -32,7 +32,7 @@ function App() {
         backgroundPosition: "center",
       }}
     >
-      <div className="pt-4">
+      <div className="pt-">
         <img
           src={logo}
           alt="Bizxflow Logo"
@@ -83,8 +83,11 @@ function App() {
           />
           <button
             type="submit"
-            className="bg-white text-[#6B9FED] px-12 py-4 rounded-lg text-xl font-bold hover:bg-opacity-90 transition-all whitespace-nowrap"
-            style={{ fontFamily: "PolySans-neutral, sans-serif" }}
+            className=" text-white px-12 py-4 rounded-lg text-md font-bold hover:bg-opacity-10 transition-all whitespace-nowrap"
+            style={{
+              fontFamily: "PolySans-neutral, sans-serif",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            }}
           >
             Join Waitlist
           </button>

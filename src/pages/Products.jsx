@@ -1,10 +1,22 @@
 import { useState } from "react";
 import Layout from "../components/layout/Layout";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 
 function Products() {
   // 1. Create products state
   // 2. Create dummy product data
   // Array to hold multiple products
+  const [name, setName] = useState();
+  const [category, setCategory] = useState();
+  const [price, setPrice] = useState();
+  const [stock, setStock] = useState();
+  const [showform, setShowform] = useState();
   const [products, setProducts] = useState([
     { id: 1, name: "iPhone", category: "Electronics", price: 999, stock: 50 },
     { id: 2, name: "Laptop", category: "Electronics", price: 1500, stock: 30 },
@@ -68,12 +80,17 @@ function Products() {
   const addProduct = () => {
     let product = {
       id: products.length + 1,
-      name: "iPhone",
-      category: "Electronics",
-      price: 999,
-      stock: 50,
+      name: name,
+      category: category,
+      price: price,
+      stock: stock,
     };
     setProducts([...products, product]);
+    setName("");
+    setCategory("");
+    setPrice("");
+    setStock("");
+    setShowform(false); // Close dialog
   };
 
   return (
@@ -82,12 +99,58 @@ function Products() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Products</h1>
-          <button
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg cursor-pointer"
-            onClick={addProduct}
-          >
-            Add Product
-          </button>
+
+          <Dialog open={showform} onOpenChange={setShowform}>
+            <DialogTrigger asChild>
+              <button className="bg-blue-500 text-white px-6 py-2 rounded-lg cursor-pointer">
+                Add Product
+              </button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Product</DialogTitle>
+              </DialogHeader>
+
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  value={name}
+                  type="text"
+                  placeholder="Product Name"
+                  className="border p-2 rounded"
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <input
+                  value={category}
+                  type="text"
+                  placeholder="Category"
+                  className="border p-2 rounded"
+                  onChange={(e) => setCategory(e.target.value)}
+                />
+                <input
+                  value={price}
+                  type="number"
+                  placeholder="Price"
+                  className="border p-2 rounded"
+                  onChange={(e) => setPrice(e.target.value)}
+                />
+                <input
+                  value={stock}
+                  type="number"
+                  placeholder="Stock"
+                  className="border p-2 rounded"
+                  onChange={(e) => setStock(e.target.value)}
+                />
+              </div>
+
+              <button
+                className="bg-green-500 text-white px-6 py-2 rounded-lg mt-4"
+                onClick={addProduct}
+              >
+                Save Product
+              </button>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Table */}
@@ -113,6 +176,7 @@ function Products() {
             </tbody>
           </table>
         </div>
+        {/* Add Product Form */}
       </div>
     </Layout>
   );

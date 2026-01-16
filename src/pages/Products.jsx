@@ -2,7 +2,6 @@ import { useState } from "react";
 import Layout from "../components/layout/Layout";
 
 function Products() {
-  // YOUR LOGIC HERE:
   // 1. Create products state
   // 2. Create dummy product data
   // Array to hold multiple products
@@ -66,6 +65,16 @@ function Products() {
       stock: 28,
     },
   ]);
+  const addProduct = () => {
+    let product = {
+      id: products.length + 1,
+      name: "iPhone",
+      category: "Electronics",
+      price: 999,
+      stock: 50,
+    };
+    setProducts([...products, product]);
+  };
 
   return (
     <Layout>
@@ -73,7 +82,10 @@ function Products() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Products</h1>
-          <button className="bg-blue-500 text-white px-6 py-2 rounded-lg">
+          <button
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg cursor-pointer"
+            onClick={addProduct}
+          >
             Add Product
           </button>
         </div>

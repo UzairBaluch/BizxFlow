@@ -20,7 +20,7 @@ function Sidebar() {
   return (
     <div
       className="w-64 h-screen flex flex-col"
-      style={{ backgroundColor: "#769bff" }}
+      style={{ backgroundColor: "#1e5aff " }}
     >
       {/* Logo Section */}
       <div className="p- text-center border-b border-white/20">

@@ -8,7 +8,7 @@ function Dashboard() {
   const [customers, setCustomers] = useState(89);
   return (
     <Layout>
-      <div className="p-8">
+      <div className="p-0">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
         {/* Stats Cards */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../components/layout/Layout";
 import {
   Dialog,
@@ -77,6 +77,13 @@ function Products() {
       stock: 28,
     },
   ]);
+  useEffect(() => {
+    // Load from localStorage
+    const saved = localStorage.getItem("products");
+    if (saved) {
+      setProducts(JSON.parse(saved));
+    }
+  }, []);
   const addProduct = () => {
     let product = {
       id: products.length + 1,
@@ -85,6 +92,8 @@ function Products() {
       price: price,
       stock: stock,
     };
+    const updatedProducts = [...products, product];
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
     setProducts([...products, product]);
     setName("");
     setCategory("");
@@ -92,10 +101,15 @@ function Products() {
     setStock("");
     setShowform(false); // Close dialog
   };
+  const deleteProduct = (id) => {
+    const updatedProducts = products.filter((product) => product.id !== id);
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+  };
 
   return (
     <Layout>
-      <div className="p-8">
+      <div className="p-">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Products</h1>
@@ -156,12 +170,19 @@ function Products() {
         {/* Table */}
         <div className="bg-white rounded-lg shadow">
           <table className="w-full">
-            <thead className="bg-gray-100">
+            <thead
+              className="bg-gray-100 text-white"
+              style={{
+                backgroundColor: "#1e5aff ",
+                fontFamily: "PolySans-neutral, sans-serif",
+              }}
+            >
               <tr>
                 <th className="p-4 text-left">Name</th>
                 <th className="p-4 text-left">Category</th>
                 <th className="p-4 text-left">Price</th>
                 <th className="p-4 text-left">Stock</th>
+                <th className="p-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -169,8 +190,16 @@ function Products() {
                 <tr key={product.id}>
                   <td className="p-4">{product.name}</td>
                   <td className="p-4">{product.category}</td>
-                  <td className="p-4">${product.price}</td>
+                  <td className="p-4">OMR {product.price}</td>
                   <td className="p-4">{product.stock}</td>
+                  <td className="p-4">
+                    <button
+                      className="bg-gray-500 text-white px-4 py-1 rounded cursor-pointer"
+                      onClick={() => deleteProduct(product.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

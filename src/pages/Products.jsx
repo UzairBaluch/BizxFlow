@@ -9,84 +9,32 @@ import {
 } from "../components/ui/dialog";
 
 function Products() {
-  // 1. Create products state
-  // 2. Create dummy product data
-  // Array to hold multiple products
+
   const [name, setName] = useState();
   const [category, setCategory] = useState();
   const [price, setPrice] = useState();
   const [stock, setStock] = useState();
   const [showform, setShowform] = useState();
-  const [products, setProducts] = useState([
-    { id: 1, name: "iPhone", category: "Electronics", price: 999, stock: 50 },
-    { id: 2, name: "Laptop", category: "Electronics", price: 1500, stock: 30 },
-    {
-      id: 3,
-      name: "MacBook Pro",
-      category: "Electronics",
-      price: 2000,
-      stock: 10,
-    },
-    { id: 4, name: "Ear Buds", category: "Electronics", price: 500, stock: 50 },
-    {
-      id: 5,
-      name: "USB-C Cable",
-      category: "Electronics",
-      price: 100,
-      stock: 30,
-    },
-
-    {
-      id: 6,
-      name: "Wireless Mouse",
-      category: "Electronics",
-      price: 150,
-      stock: 40,
-    },
-    { id: 7, name: "Keyboard", category: "Electronics", price: 300, stock: 25 },
-    { id: 8, name: "Monitor", category: "Electronics", price: 1200, stock: 15 },
-    {
-      id: 9,
-      name: "Smart Watch",
-      category: "Electronics",
-      price: 800,
-      stock: 20,
-    },
-    { id: 10, name: "Tablet", category: "Electronics", price: 1100, stock: 18 },
-
-    {
-      id: 11,
-      name: "Power Bank",
-      category: "Electronics",
-      price: 250,
-      stock: 60,
-    },
-    {
-      id: 12,
-      name: "Bluetooth Speaker",
-      category: "Electronics",
-      price: 600,
-      stock: 35,
-    },
-    { id: 13, name: "Webcam", category: "Electronics", price: 400, stock: 22 },
-    {
-      id: 14,
-      name: "Headphones",
-      category: "Electronics",
-      price: 700,
-      stock: 28,
-    },
-  ]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [products, setProducts] = useState([]);
   useEffect(() => {
-    // Load from localStorage
+
     const saved = localStorage.getItem("products");
     if (saved) {
       setProducts(JSON.parse(saved));
     }
   }, []);
+  useEffect(() => {
+    if (editingProduct) {
+      setName(editingProduct.name);
+      setCategory(editingProduct.category);
+      setPrice(editingProduct.price);
+      setStock(editingProduct.stock);
+    }
+  }, [editingProduct]);
   const addProduct = () => {
     let product = {
-      id: products.length + 1,
+      id: Date.now(),
       name: name,
       category: category,
       price: price,
@@ -99,12 +47,41 @@ function Products() {
     setCategory("");
     setPrice("");
     setStock("");
-    setShowform(false); // Close dialog
+    setShowform(false); 
   };
   const deleteProduct = (id) => {
     const updatedProducts = products.filter((product) => product.id !== id);
     localStorage.setItem("products", JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
+  };
+
+  const handleSave = () => {
+    if (editingProduct) {
+    
+      const updatedProducts = products.map((product) => {
+        if (product.id === editingProduct.id) {
+          return {
+            ...product,
+            name,
+            category,
+            price,
+            stock,
+          };
+        }
+        return product;
+      });
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      setProducts(updatedProducts);
+      setEditingProduct(null);
+      setName("");
+      setCategory("");
+      setPrice("");
+      setStock("");
+      setShowform(false);
+    } else {
+      
+      addProduct();
+    }
   };
 
   return (
@@ -156,12 +133,11 @@ function Products() {
                   onChange={(e) => setStock(e.target.value)}
                 />
               </div>
-
               <button
-                className="bg-green-500 text-white px-6 py-2 rounded-lg mt-4"
-                onClick={addProduct}
+                className="bg-gray-500 text-white px-4 py-1 rounded cursor-pointer"
+                onClick={handleSave}
               >
-                Save Product
+                {editingProduct ? "Update Product" : "Save Product"}
               </button>
             </DialogContent>
           </Dialog>
@@ -192,9 +168,18 @@ function Products() {
                   <td className="p-4">{product.category}</td>
                   <td className="p-4">OMR {product.price}</td>
                   <td className="p-4">{product.stock}</td>
-                  <td className="p-4">
+                  <td className="p-4 flex gap-2">
                     <button
                       className="bg-gray-500 text-white px-4 py-1 rounded cursor-pointer"
+                      onClick={() => {
+                        setEditingProduct(product);
+                        setShowform(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-gray-500 text-white px-4 py-1 rounded cursor-pointer "
                       onClick={() => deleteProduct(product.id)}
                     >
                       Delete
@@ -205,7 +190,7 @@ function Products() {
             </tbody>
           </table>
         </div>
-        {/* Add Product Form */}
+       
       </div>
     </Layout>
   );

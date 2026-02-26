@@ -17,7 +17,6 @@ const userSchema = new Schema(
     number: {
       type: Number,
       unique: true,
-      required: true,
     },
     email: {
       type: String,
@@ -32,21 +31,15 @@ const userSchema = new Schema(
     },
     department: {
       type: String,
-      required: [true, "department is required"],
     },
     role: {
       type: String,
-      required: [true, "role is required"],
-      enum: ["Admin", "Manager", "Employee"],
-      default: "Employee",
     },
     address: {
       type: String,
-      required: true,
     },
     position: {
       type: String,
-      required: true,
     },
     salary: {
       type: Number,
@@ -64,11 +57,10 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next()
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 10);
-  next()
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {

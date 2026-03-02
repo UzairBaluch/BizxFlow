@@ -8,6 +8,7 @@ import { refreshAccessToken } from "../controllers/refreshAccessToken.controller
 import {
   checkInUser,
   checkOutUser,
+  checkRecord,
 } from "../controllers/attendance.controller.js";
 
 const router = Router();
@@ -26,5 +27,6 @@ router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/checkIn").post(verifyJWT, checkInUser);
 router.route("/checkOut").post(verifyJWT, checkOutUser);
+router.route("/check-record").get(verifyJWT, checkRecord);
 
 export default router;

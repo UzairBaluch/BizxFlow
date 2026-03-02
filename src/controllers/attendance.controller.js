@@ -2,7 +2,7 @@ import { Attendance } from "../models/attendance.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import { dateRange } from "../utils/CustomDateMaker.js";
 import { date } from "../utils/DateMaker.js";
 
 const checkInUser = asyncHandler(async (req, res) => {
@@ -77,12 +77,36 @@ const checkOutUser = asyncHandler(async (req, res) => {
   );
 
   if (!updatedRecord) {
-    throw new ApiError(500,"something went wrong")
+    throw new ApiError(500, "something went wrong");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200,updatedRecord, "attendance updated successfully"))
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedRecord, "attendance updated successfully")
+    );
 });
 
-export { checkInUser, checkOutUser };
+const checkRecord = asyncHandler(async (req, res) => {
+  const user = req.user?._id;
+  if (!user) {
+    throw new ApiError(400, "User not found");
+  }
+  const {from, to} = req.query
+  const { startDate, endDate } = dateRange(from,to);
+  const recordAttendance = await Attendance.find({
+    user: user,
+    date: { $gte: startDate, $lte: endDate },
+  });
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        recordAttendance,
+        "attendance result found successfully "
+      )
+    );
+});
+
+export { checkInUser, checkOutUser, checkRecord };

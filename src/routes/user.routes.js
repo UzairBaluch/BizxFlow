@@ -9,6 +9,7 @@ import {
   checkInUser,
   checkOutUser,
   checkRecord,
+  getAllAttendance,
 } from "../controllers/attendance.controller.js";
 
 const router = Router();
@@ -28,5 +29,6 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/checkIn").post(verifyJWT, checkInUser);
 router.route("/checkOut").post(verifyJWT, checkOutUser);
 router.route("/check-record").get(verifyJWT, checkRecord);
+router.route("/record-all").get(verifyJWT , getAllAttendance)
 
 export default router;

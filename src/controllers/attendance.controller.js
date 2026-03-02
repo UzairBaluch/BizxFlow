@@ -108,5 +108,24 @@ const checkRecord = asyncHandler(async (req, res) => {
       )
     );
 });
+const getAllAttendance = asyncHandler(async(req,res)=>{
+  const user =  req.user
+  if (!user) {
+    throw new ApiError(401,"Unauthorized ")
+  }
+  if (req.user.role !== "Admin") {
+    throw new ApiError(400, "Unauthorized request")
+  }
+  const {from,to} = req.query;
+  const {startDate, endDate} = dateRange(from,to)
+  const recordFind =  await Attendance.find({
+    date: { $gte: startDate, $lte: endDate },
+  }).sort({user:1,date: -1})
 
-export { checkInUser, checkOutUser, checkRecord };
+
+  return res
+  .status(403)
+  .json(new ApiResponse(200,recordFind,"all attendance record found"))
+})
+
+export { checkInUser, checkOutUser, checkRecord, getAllAttendance };

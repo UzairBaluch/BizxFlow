@@ -92,8 +92,8 @@ const checkRecord = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(400, "User not found");
   }
-  const {from, to} = req.query
-  const { startDate, endDate } = dateRange(from,to);
+  const { from, to } = req.query;
+  const { startDate, endDate } = dateRange(from, to);
   const recordAttendance = await Attendance.find({
     user: user,
     date: { $gte: startDate, $lte: endDate },
@@ -108,24 +108,25 @@ const checkRecord = asyncHandler(async (req, res) => {
       )
     );
 });
-const getAllAttendance = asyncHandler(async(req,res)=>{
-  const user =  req.user
+const getAllAttendance = asyncHandler(async (req, res) => {
+  const user = req.user;
   if (!user) {
-    throw new ApiError(401,"Unauthorized ")
+    throw new ApiError(401, "Unauthorized ");
   }
   if (req.user.role !== "Admin") {
-    throw new ApiError(400, "Unauthorized request")
+    throw new ApiError(403, "Unauthorized request");
   }
-  const {from,to} = req.query;
-  const {startDate, endDate} = dateRange(from,to)
-  const recordFind =  await Attendance.find({
+  const { from, to } = req.query;
+  const { startDate, endDate } = dateRange(from, to);
+  const recordFind = await Attendance.find({
     date: { $gte: startDate, $lte: endDate },
-  }).sort({user:1,date: -1})
-
+  })
+    .populate("user", "fullName email")
+    .sort({ user: 1, date: -1 });
 
   return res
-  .status(403)
-  .json(new ApiResponse(200,recordFind,"all attendance record found"))
-})
+    .status(200)
+    .json(new ApiResponse(200, recordFind, "all attendance record found"));
+});
 
 export { checkInUser, checkOutUser, checkRecord, getAllAttendance };

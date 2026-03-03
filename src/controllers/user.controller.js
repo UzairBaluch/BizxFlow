@@ -7,7 +7,7 @@ import { User } from "../models/user.model.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   console.log(req.files);
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, role } = req.body;
   if ([fullName, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "all fields are required");
   }
@@ -34,6 +34,7 @@ const registerUser = asyncHandler(async (req, res) => {
     picture: pictureRef.url,
     email,
     password,
+    role: role || "Employee",
   });
 
   const createdUser = await User.findById(user._id).select("-password");

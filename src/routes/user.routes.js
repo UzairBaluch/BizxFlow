@@ -11,7 +11,11 @@ import {
   checkRecord,
   getAllAttendance,
 } from "../controllers/attendance.controller.js";
-import { task } from "../controllers/task.controller.js";
+import {
+  getMyTask,
+  task,
+  updateTaskStatus,
+} from "../controllers/task.controller.js";
 
 const router = Router();
 
@@ -32,5 +36,7 @@ router.route("/checkOut").post(verifyJWT, checkOutUser);
 router.route("/check-record").get(verifyJWT, checkRecord);
 router.route("/record-all").get(verifyJWT, getAllAttendance);
 router.route("/tasks").post(verifyJWT, task);
+router.route("/tasks").get(verifyJWT, getMyTask);
+router.route("/tasks/:id").patch(verifyJWT, updateTaskStatus);
 
 export default router;

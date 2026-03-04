@@ -126,7 +126,7 @@ const getAllAttendance = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, recordFind, "all attendance record found"));
+    .json(new ApiResponse(200, recordFind, "all attendance records found"));
 });
 
 export { checkInUser, checkOutUser, checkRecord, getAllAttendance };

@@ -16,7 +16,7 @@ Tackle one by one, in this order.
 
 ## To Do
 
-1. **Leave management** – Apply, approve/reject, status workflow
+1. ~~**Leave management** – Apply, approve/reject, status workflow~~ ✓
 2. **Real-time group chat** – Socket.io, rooms, message history
 3. **Email notifications** – Nodemailer (leave approved, task assigned)
 4. **Dashboard analytics** – MongoDB aggregation, stats

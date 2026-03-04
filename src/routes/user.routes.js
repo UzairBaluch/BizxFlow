@@ -16,6 +16,12 @@ import {
   task,
   updateTaskStatus,
 } from "../controllers/task.controller.js";
+import {
+  getAllLeaves,
+  getMyLeaves,
+  submitLeave,
+  updateLeaveStatus,
+} from "../controllers/leave.controller.js";
 
 const router = Router();
 
@@ -38,5 +44,9 @@ router.route("/record-all").get(verifyJWT, getAllAttendance);
 router.route("/tasks").post(verifyJWT, task);
 router.route("/tasks").get(verifyJWT, getMyTask);
 router.route("/tasks/:id").patch(verifyJWT, updateTaskStatus);
+router.route("/submit-leave").post(verifyJWT, submitLeave);
+router.route("/update-leave/:leaveId").patch(verifyJWT, updateLeaveStatus);
+router.route("/all-leaves").get(verifyJWT, getAllLeaves);
+router.route("/my-leaves").get(verifyJWT, getMyLeaves);
 
 export default router;

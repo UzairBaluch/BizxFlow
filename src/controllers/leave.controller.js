@@ -2,6 +2,8 @@ import { Leave } from "../models/leave.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { User } from "../models/user.model.js";
+import { sendMail } from "../utils/sendEmail.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -49,6 +51,13 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
   leave.status = status;
   leave.reviewedBy = req.user._id;
   await leave.save();
+
+  const emailInfo = await User.findById(leave.employee);
+  await sendMail(
+    emailInfo.email,
+    "Leave Request Update",
+    `<p> Your Leave request has been <strong> ${status} </strong>.</p>`
+  );
 
   return res
     .status(200)

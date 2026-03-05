@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { sendMail } from "../utils/sendEmail.js";
 
 const task = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -33,6 +34,12 @@ const task = asyncHandler(async (req, res) => {
     dueDate,
     createdBy: req.user?._id,
   });
+
+  await sendMail(
+    assignedCheck.email,
+    "Task Request Update",
+    `<p> Your Task request has been <strong> ${title} </strong>.</p>`
+  );
 
   return res
     .status(201)

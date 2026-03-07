@@ -13,7 +13,7 @@ const checkInUser = asyncHandler(async (req, res) => {
 
   const { role } = req.user;
   if (role !== "Employee") {
-    throw new ApiError(400, " unauthorized reqest");
+    throw new ApiError(403, "Unauthorized request");
   }
 
   const { startDay, endDay } = date();
@@ -33,10 +33,7 @@ const checkInUser = asyncHandler(async (req, res) => {
   });
 
   if (!userRecord) {
-    throw new ApiError(
-      500,
-      "something went wrong while registerning attendace"
-    );
+    throw new ApiError(500, "Something went wrong while registering attendance");
   }
 
   return res
@@ -49,12 +46,12 @@ const checkInUser = asyncHandler(async (req, res) => {
 const checkOutUser = asyncHandler(async (req, res) => {
   const user = req.user?._id;
   if (!user) {
-    throw new ApiError(400, "unauthorized reqest");
+    throw new ApiError(401, "Unauthorized request");
   }
 
   const { role } = req.user;
   if (role !== "Employee") {
-    throw new ApiError(400, "unauthorized reqest");
+    throw new ApiError(403, "Unauthorized request");
   }
 
   const { startDay, endDay } = date();
@@ -68,7 +65,7 @@ const checkOutUser = asyncHandler(async (req, res) => {
   }
 
   if (recordAttendance.checkOut) {
-    throw new ApiError(400, "already checkout ");
+    throw new ApiError(400, "Already checked out");
   }
   const updatedRecord = await Attendance.findByIdAndUpdate(
     recordAttendance?._id,

@@ -6,7 +6,6 @@ import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { User } from "../models/user.model.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-  console.log(req.files);
   const { fullName, email, password, role } = req.body;
   if ([fullName, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "all fields are required");
@@ -22,12 +21,12 @@ const registerUser = asyncHandler(async (req, res) => {
   const pictureLocalPath = req.files?.picture[0]?.path;
 
   if (!pictureLocalPath) {
-    throw new ApiError(400, "picture is required1");
+    throw new ApiError(400, "Picture is required");
   }
 
   const pictureRef = await uploadOnCloudinary(pictureLocalPath);
   if (!pictureRef) {
-    throw new ApiError(400, "picture is required2");
+    throw new ApiError(500, "Failed to upload picture");
   }
   const user = await User.create({
     fullName,

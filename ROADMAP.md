@@ -20,13 +20,13 @@ Tackle one by one, in this order.
 2. ~~**Email notifications** – Nodemailer (leave approved, task assigned)~~ ✓
 3. ~~**Password reset** – Forgot password, token, reset via email~~ ✓
 4. **Real-time group chat** – Socket.io, rooms, message history
-4. **Dashboard analytics** – MongoDB aggregation, stats
-5. **Search & pagination** – Tasks, users, attendance filters
-6. **Rate limiting** – express-rate-limit on auth routes
-7. **API documentation** – Swagger/OpenAPI
-8. **Audit logs** – Track who did what
-9. **Scheduled jobs** – node-cron (reminders, reports)
-10. **Video meetings** – Daily.co or Twilio integration
+5. **Dashboard analytics** – MongoDB aggregation, stats
+6. **Search & pagination** – Tasks, users, attendance filters
+7. **Rate limiting** – express-rate-limit on auth routes
+8. **API documentation** – Swagger/OpenAPI
+9. **Audit logs** – Track who did what
+10. **Scheduled jobs** – node-cron (reminders, reports)
+11. **Video meetings** – Daily.co or Twilio integration
 
 ---
 
@@ -34,5 +34,5 @@ Tackle one by one, in this order.
 
 - DB indexes
 - Unit tests (Jest)
+- TypeScript conversion
 - Deployment
-- Password reset flow

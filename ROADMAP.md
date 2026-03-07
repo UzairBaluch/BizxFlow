@@ -18,7 +18,8 @@ Tackle one by one, in this order.
 
 1. ~~**Leave management** – Apply, approve/reject, status workflow~~ ✓
 2. ~~**Email notifications** – Nodemailer (leave approved, task assigned)~~ ✓
-3. **Real-time group chat** – Socket.io, rooms, message history
+3. ~~**Password reset** – Forgot password, token, reset via email~~ ✓
+4. **Real-time group chat** – Socket.io, rooms, message history
 4. **Dashboard analytics** – MongoDB aggregation, stats
 5. **Search & pagination** – Tasks, users, attendance filters
 6. **Rate limiting** – express-rate-limit on auth routes

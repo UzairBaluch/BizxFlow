@@ -22,6 +22,10 @@ import {
   submitLeave,
   updateLeaveStatus,
 } from "../controllers/leave.controller.js";
+import {
+  forgotPassword,
+  resetPassword,
+} from "../controllers/passwordReset.controller.js";
 
 const router = Router();
 
@@ -48,5 +52,7 @@ router.route("/submit-leave").post(verifyJWT, submitLeave);
 router.route("/update-leave/:leaveId").patch(verifyJWT, updateLeaveStatus);
 router.route("/all-leaves").get(verifyJWT, getAllLeaves);
 router.route("/my-leaves").get(verifyJWT, getMyLeaves);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
 
 export default router;

@@ -1,26 +1,49 @@
 # BizxFlow
 
-A production-ready Employee Management System built with Node.js, Express, and MongoDB.
+A production-ready REST API for managing employees, attendance, tasks, and leaves — built with Node.js, Express, and MongoDB.
+
+Designed for businesses that need role-based workforce management with real-time notifications and secure authentication.
+
+---
 
 ## Features
 
-- Role-based access control (Admin, Manager, Employee)
-- Attendance tracking (check-in, check-out, records)
-- Task management (create, assign, update status)
-- Leave management (apply, approve/reject, status workflow)
-- Email notifications (leave status, task assignment)
-- Password reset (secure token-based flow with auto-expiry)
+- **Authentication** – Register, login, logout, refresh tokens, password reset via email
+- **Role-Based Access Control** – Admin, Manager, Employee roles with protected routes
+- **Attendance Tracking** – Check-in, check-out, view records by date range
+- **Task Management** – Create and assign tasks, update status, email notifications
+- **Leave Management** – Apply for leave, approve/reject workflow, email notifications
+- **File Uploads** – Profile pictures via Cloudinary
+- **Security** – JWT authentication, bcrypt password hashing, token auto-expiry
+
+---
 
 ## Tech Stack
 
-- Node.js
-- Express
-- MongoDB + Mongoose
-- JWT Authentication
-- Cloudinary (Image uploads)
-- Multer
-- Nodemailer (Email)
-- Crypto (Token generation)
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Database | MongoDB + Mongoose |
+| Auth | JWT + bcrypt |
+| File Upload | Cloudinary + Multer |
+| Email | Nodemailer (Gmail SMTP) |
+| Token Generation | Node.js crypto |
+
+---
+
+## Project Structure
+
+```
+src/
+├── controllers/       # Route handlers
+├── middlewares/       # Auth and file upload middleware
+├── models/            # Mongoose schemas
+├── routes/            # Express routes
+└── utils/             # Helper functions (ApiError, ApiResponse, sendEmail, etc.)
+```
+
+---
 
 ## API Endpoints
 
@@ -37,10 +60,10 @@ A production-ready Employee Management System built with Node.js, Express, and M
 ### Attendance
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/checkIn` | Auth |
-| POST | `/api/v1/users/checkOut` | Auth |
+| POST | `/api/v1/users/checkIn` | Employee |
+| POST | `/api/v1/users/checkOut` | Employee |
 | GET | `/api/v1/users/check-record` | Auth |
-| GET | `/api/v1/users/record-all` | Admin/Manager |
+| GET | `/api/v1/users/record-all` | Admin |
 
 ### Tasks
 | Method | Endpoint | Access |
@@ -57,11 +80,32 @@ A production-ready Employee Management System built with Node.js, Express, and M
 | GET | `/api/v1/users/all-leaves` | Admin/Manager |
 | GET | `/api/v1/users/my-leaves` | Auth |
 
-## Setup
+---
 
-1. Clone the repo
-2. Run `npm install`
-3. Create a `.env` file with the following variables:
+## Getting Started
+
+### Prerequisites
+- Node.js v18+
+- MongoDB Atlas account
+- Cloudinary account
+- Gmail account with App Password enabled
+
+### Installation
+
+```bash
+git clone https://github.com/UzairBaluch/BizxFlow.git
+cd BizxFlow
+npm install
+```
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
 ```
 PORT=8000
 MONGODB_URI=
@@ -76,8 +120,17 @@ CLOUDINARY_API_SECRET=
 EMAIL=
 PASS=
 ```
-4. Run `npm run dev`
+
+### Run
+
+```bash
+npm run dev
+```
+
+Server starts at `http://localhost:8000`
+
+---
 
 ## Author
 
-Uzair Baloch
+**Uzair Baloch** – Self-taught backend developer

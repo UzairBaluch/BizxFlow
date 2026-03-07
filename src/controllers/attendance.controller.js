@@ -110,7 +110,7 @@ const getAllAttendance = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(401, "Unauthorized ");
   }
-  if (req.user.role !== "Admin") {
+  if (req.user.role !== "Admin" && req.user.role !== "Manager") {
     throw new ApiError(403, "Unauthorized request");
   }
   const { from, to } = req.query;

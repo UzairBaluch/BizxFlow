@@ -63,7 +63,7 @@ src/
 | POST | `/api/v1/users/checkIn` | Employee |
 | POST | `/api/v1/users/checkOut` | Employee |
 | GET | `/api/v1/users/check-record` | Auth |
-| GET | `/api/v1/users/record-all` | Admin |
+| GET | `/api/v1/users/record-all` | Admin/Manager |
 
 ### Tasks
 | Method | Endpoint | Access |

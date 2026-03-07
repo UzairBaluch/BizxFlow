@@ -26,6 +26,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "../controllers/passwordReset.controller.js";
+import { authLimiter } from "../middlewares/rateLimiter.middelware.js";
 
 const router = Router();
 
@@ -35,10 +36,11 @@ router.route("/register").post(
       name: "picture",
     },
   ]),
+  authLimiter,
   registerUser
 );
 
-router.route("/login").post(loginUser);
+router.route("/login").post(authLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/checkIn").post(verifyJWT, checkInUser);
@@ -52,7 +54,7 @@ router.route("/submit-leave").post(verifyJWT, submitLeave);
 router.route("/update-leave/:leaveId").patch(verifyJWT, updateLeaveStatus);
 router.route("/all-leaves").get(verifyJWT, getAllLeaves);
 router.route("/my-leaves").get(verifyJWT, getMyLeaves);
-router.route("/forgot-password").post(forgotPassword);
-router.route("/reset-password/:token").post(resetPassword);
+router.route("/forgot-password").post(authLimiter, forgotPassword);
+router.route("/reset-password/:token").post(authLimiter, resetPassword);
 
 export default router;

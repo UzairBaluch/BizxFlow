@@ -34,11 +34,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
 const resetPassword = asyncHandler(async (req, res) => {
   const token = req.params.token;
   if (!token) {
-    throw new ApiError(404, "Token is required");
+    throw new ApiError(400, "Token is required");
   }
   const { newPassword } = req.body;
   if (!newPassword) {
-    throw new ApiError(400, "New Password is not found");
+    throw new ApiError(400, "New password is required");
   }
   const resetToken = await ResetToken.findOne({ token });
   if (!resetToken) {
@@ -50,7 +50,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Invalid user");
   }
   if (newPassword.length < 6) {
-    throw new ApiError(400, "Password length is to short");
+    throw new ApiError(400, "Password is too short, minimum 6 characters");
   }
   user.password = newPassword;
   await user.save();

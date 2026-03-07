@@ -8,7 +8,7 @@ import { sendMail } from "../utils/sendEmail.js";
 const task = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
-    throw new ApiError(400, "Unauthorized request");
+    throw new ApiError(401, "Unauthorized request");
   }
 
   if (req.user.role !== "Admin" && req.user.role !== "Manager") {
@@ -37,8 +37,8 @@ const task = asyncHandler(async (req, res) => {
 
   await sendMail(
     assignedCheck.email,
-    "Task Request Update",
-    `<p> Your Task request has been <strong> ${title} </strong>.</p>`
+    "New Task Assigned",
+    `<p>You have been assigned a new task: <strong>${title}</strong>.</p>`
   );
 
   return res
@@ -50,7 +50,7 @@ const getMyTask = asyncHandler(async (req, res) => {
   const user = req.user?._id;
 
   if (!user) {
-    throw new ApiError(400, "Unauthorized Request");
+    throw new ApiError(401, "Unauthorized request");
   }
 
   const taskFound = await Task.find({

@@ -8,7 +8,7 @@ import { sendMail } from "../utils/sendEmail.js";
 const submitLeave = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
-    throw new ApiError(400, "unauthorized request");
+    throw new ApiError(401, "Unauthorized request");
   }
   const { leaveType, startDate, endDate, reason } = req.body;
   if (!leaveType || !startDate || !endDate) {
@@ -28,7 +28,7 @@ const submitLeave = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, createLeave, "Leave Created Sucessfully"));
+    .json(new ApiResponse(200, createLeave, "Leave created successfully"));
 });
 
 const updateLeaveStatus = asyncHandler(async (req, res) => {
@@ -61,7 +61,7 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, leave, "Leave Status updated successflly"));
+    .json(new ApiResponse(200, leave, "Leave status updated successfully"));
 });
 
 const getAllLeaves = asyncHandler(async (req, res) => {
@@ -78,7 +78,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
 const getMyLeaves = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
-    throw new ApiError(400, "Unauthorized request");
+    throw new ApiError(401, "Unauthorized request");
   }
   const leaveFound = await Leave.find({
     employee: req.user._id,

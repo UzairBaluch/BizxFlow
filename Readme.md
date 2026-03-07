@@ -117,8 +117,8 @@ CORS_ORIGIN=*
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-EMAIL=
-PASS=
+EMAIL_USER=
+EMAIL_PASS=
 ```
 
 ### Run
@@ -133,4 +133,4 @@ Server starts at `http://localhost:8000`
 
 ## Author
 
-**Uzair Baloch** – Self-taught backend developer
+**[Uzair Baluch](https://github.com/UzairBaluch)** – Self-taught backend developer

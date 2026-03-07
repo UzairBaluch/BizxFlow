@@ -7,6 +7,10 @@ import { sendMail } from "../utils/sendEmail.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
   const user = req.user;
+  const email = req.user.email;
+  if (!email) {
+    throw new ApiError(401, "Unauthorized request");
+  }
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
   }
@@ -25,6 +29,11 @@ const submitLeave = asyncHandler(async (req, res) => {
     endDate,
     reason,
   });
+  await sendMail(
+    email,
+    "New Leave Request",
+    `<p>Your <strong>${leaveType}</strong> leave request from <strong>${startDate}</strong> to <strong>${endDate}</strong> has been submitted and is pending approval.</p>`
+  );
 
   return res
     .status(200)

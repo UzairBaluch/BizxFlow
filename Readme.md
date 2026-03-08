@@ -84,6 +84,11 @@ src/
 | GET | `/api/v1/users/all-leaves` | Admin/Manager |
 | GET | `/api/v1/users/my-leaves` | Auth |
 
+### Users
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| GET | `/api/v1/users/all-users` | Admin |
+
 ---
 
 ## Getting Started

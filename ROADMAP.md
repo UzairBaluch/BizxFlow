@@ -36,11 +36,13 @@
 - Rate limiting on auth routes
 - Morgan request logging
 
+### User Management
+- Get all users (Admin only)
+
 ---
 
 ## 🔄 In Progress
 
-- Get all users (Admin only)
 - Update profile (name + profile picture)
 - Change password (verify current, set new)
 

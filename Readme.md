@@ -14,7 +14,9 @@ Designed for businesses that need role-based workforce management with real-time
 - **Task Management** – Create and assign tasks, update status, email notifications
 - **Leave Management** – Apply for leave, approve/reject workflow, email notifications
 - **File Uploads** – Profile pictures via Cloudinary
-- **Security** – JWT authentication, bcrypt password hashing, token auto-expiry
+- **Email Notifications** – Nodemailer on task assignment, leave submission, and password reset
+- **Security** – JWT auth, bcrypt password hashing, helmet HTTP headers, rate limiting on auth routes
+- **Request Logging** – morgan logs every request with method, route, status, and response time
 
 ---
 
@@ -29,6 +31,8 @@ Designed for businesses that need role-based workforce management with real-time
 | File Upload | Cloudinary + Multer |
 | Email | Nodemailer (Gmail SMTP) |
 | Token Generation | Node.js crypto |
+| Security | helmet + express-rate-limit |
+| Logging | morgan |
 
 ---
 

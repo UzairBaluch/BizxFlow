@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { getAllUsers, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middelware.js";
 import { loginUser } from "../controllers/loginUser.controller.js";
 import { verifyJWT } from "../middlewares/auth.middelware.js";
@@ -56,5 +56,6 @@ router.route("/all-leaves").get(verifyJWT, getAllLeaves);
 router.route("/my-leaves").get(verifyJWT, getMyLeaves);
 router.route("/forgot-password").post(authLimiter, forgotPassword);
 router.route("/reset-password/:token").post(authLimiter, resetPassword);
+router.route("/all-users").get(verifyJWT, getAllUsers);
 
 export default router;

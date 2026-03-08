@@ -47,4 +47,24 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "user registered successfully"));
 });
 
-export { registerUser };
+const getAllUsers = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new ApiError(400, "No user found");
+  }
+  const role = req.user.role;
+
+  if (role !== "Admin") {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  const allUsers = await User.find({}).select("-password -refreshToken");
+  if (allUsers.length === 0) {
+    throw new ApiError(404, "No users found");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allUsers, "All users found"));
+});
+
+export { registerUser, getAllUsers };

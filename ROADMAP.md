@@ -41,11 +41,10 @@
 - Update profile (name + profile picture)
 - Change password (verify current, set new)
 
----
-
-## 🔄 In Progress
-
-- Dashboard analytics (MongoDB aggregation — attendance trends, task completion, leave stats)
+### Dashboard Analytics
+- Total employees, tasks, leaves, today's attendance
+- Tasks and leaves grouped by status (MongoDB aggregation)
+- All queries run in parallel with Promise.all
 
 ---
 

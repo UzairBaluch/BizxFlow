@@ -17,6 +17,7 @@ Designed for businesses that need role-based workforce management with real-time
 - **Email Notifications** – Nodemailer on task assignment, leave submission, and password reset
 - **Security** – JWT auth, bcrypt password hashing, helmet HTTP headers, rate limiting on auth routes
 - **Request Logging** – morgan logs every request with method, route, status, and response time
+- **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
 
 ---
 
@@ -90,6 +91,11 @@ src/
 | GET | `/api/v1/users/all-users` | Admin |
 | PATCH | `/api/v1/users/change-password` | Auth |
 | PATCH | `/api/v1/users/update-profile` | Auth |
+
+### Dashboard
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| GET | `/api/v1/users/dashboard` | Admin/Manager |
 
 ---
 

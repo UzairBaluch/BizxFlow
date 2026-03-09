@@ -46,7 +46,6 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createdUser, "user registered successfully"));
 });
-
 const getAllUsers = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -66,5 +65,51 @@ const getAllUsers = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, allUsers, "All users found"));
 });
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if ([currentPassword, newPassword].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "Current and New password  are required");
+  }
+  if (newPassword.length < 6) {
+    throw new ApiError(400, "New password must be more than 6 characters");
+  }
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  const isPasswordValid = await user.isPasswordCorrect(currentPassword);
+  if (!isPasswordValid) {
+    throw new ApiError(400, "password is incorrect");
+  }
+  user.password = newPassword;
+  await user.save();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName } = req.body;
+  const pictureLocalPath = req.files?.picture?.[0]?.path;
+  let pictureUrl;
 
-export { registerUser, getAllUsers };
+  if (pictureLocalPath) {
+    const pictureRef = await uploadOnCloudinary(pictureLocalPath);
+
+    if (!pictureRef) {
+      throw new ApiError(500, "Failed to upload picture");
+    }
+    await deleteFromCloudinary(req.user.picture);
+    pictureUrl = pictureRef.url;
+  }
+
+  const uppdatePicture = await User.findByIdAndUpdate(
+    req.user._id,
+    { fullName, ...(pictureUrl && { picture: pictureUrl }) },
+    { new: true }
+  ).select("-password -refreshToken");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, uppdatePicture, "Profile updated successfully"));
+});
+
+export { registerUser, getAllUsers, changePassword, updateProfile };

@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { getAllUsers, registerUser } from "../controllers/user.controller.js";
+import {
+  updateProfile,
+  changePassword,
+  getAllUsers,
+  registerUser,
+} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middelware.js";
 import { loginUser } from "../controllers/loginUser.controller.js";
 import { verifyJWT } from "../middlewares/auth.middelware.js";
@@ -57,5 +62,15 @@ router.route("/my-leaves").get(verifyJWT, getMyLeaves);
 router.route("/forgot-password").post(authLimiter, forgotPassword);
 router.route("/reset-password/:token").post(authLimiter, resetPassword);
 router.route("/all-users").get(verifyJWT, getAllUsers);
+router.route("/change-password").patch(verifyJWT, changePassword);
+router.route("/update-profile").patch(
+  verifyJWT,
+  upload.fields([
+    {
+      name: "picture",
+    },
+  ]),
+  updateProfile
+);
 
 export default router;

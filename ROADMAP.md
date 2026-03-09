@@ -38,19 +38,18 @@
 
 ### User Management
 - Get all users (Admin only)
-
----
-
-## 🔄 In Progress
-
 - Update profile (name + profile picture)
 - Change password (verify current, set new)
 
 ---
 
-## 🟡 Core Features
+## 🔄 In Progress
 
-- Dashboard analytics (attendance trends, task completion, leave stats)
+- Dashboard analytics (MongoDB aggregation — attendance trends, task completion, leave stats)
+
+---
+
+## 🟡 Core Features
 - Search, pagination, and filters
 - Real-time notifications (Socket.io)
 - Scheduled email reports (node-cron)

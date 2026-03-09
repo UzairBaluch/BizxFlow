@@ -88,6 +88,8 @@ src/
 | Method | Endpoint | Access |
 |--------|----------|--------|
 | GET | `/api/v1/users/all-users` | Admin |
+| PATCH | `/api/v1/users/change-password` | Auth |
+| PATCH | `/api/v1/users/update-profile` | Auth |
 
 ---
 

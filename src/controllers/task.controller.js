@@ -52,14 +52,30 @@ const getMyTask = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
   }
+  const { page, limit, search } = req.query;
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 10;
+  const filter = { assignedTo: user };
 
-  const taskFound = await Task.find({
-    assignedTo: user,
-  }).sort({ dueDate: 1, createdAt: -1 });
+  if (search) {
+    filter.title = { $regex: search, $options: "i" };
+  }
+
+  const taskFound = await Task.find(filter)
+    .sort({ dueDate: 1, createdAt: -1 })
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum);
+  const totalTasks = await Task.countDocuments(filter);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, taskFound, "Task Found Successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { tasks: taskFound, totalTasks, page: pageNum, limit: limitNum },
+        "Tasks found successfully"
+      )
+    );
 });
 
 const updateTaskStatus = asyncHandler(async (req, res) => {

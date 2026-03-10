@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { User } from "../models/user.model.js";
+import { parse } from "path";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
@@ -56,14 +57,35 @@ const getAllUsers = asyncHandler(async (req, res) => {
   if (role !== "Admin") {
     throw new ApiError(403, "Unauthorized request");
   }
+  const { page, limit, search } = req.query;
 
-  const allUsers = await User.find({}).select("-password -refreshToken");
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 10;
+  let filter = {};
+
+  if (search) {
+    filter.fullName = { $regex: search, $options: "i" };
+  }
+
+  const allUsers = await User.find(filter)
+    .select("-password -refreshToken")
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum);
+
+  const totalUsers = await User.countDocuments(filter);
+
   if (allUsers.length === 0) {
     throw new ApiError(404, "No users found");
   }
   return res
     .status(200)
-    .json(new ApiResponse(200, allUsers, "All users found"));
+    .json(
+      new ApiResponse(
+        200,
+        { users: allUsers, totalUsers, page: pageNum, limit: limitNum },
+        "All users found"
+      )
+    );
 });
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;

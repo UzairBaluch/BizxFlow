@@ -18,6 +18,7 @@ Designed for businesses that need role-based workforce management with real-time
 - **Security** – JWT auth, bcrypt password hashing, helmet HTTP headers, rate limiting on auth routes
 - **Request Logging** – morgan logs every request with method, route, status, and response time
 - **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
+- **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
 
 ---
 

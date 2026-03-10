@@ -46,10 +46,13 @@
 - Tasks and leaves grouped by status (MongoDB aggregation)
 - All queries run in parallel with Promise.all
 
+### Search & Pagination
+- Tasks: search by title, paginate with page/limit, returns totalTasks
+- Users: search by fullName, paginate with page/limit, returns totalUsers
+
 ---
 
 ## 🟡 Core Features
-- Search, pagination, and filters
 - Real-time notifications (Socket.io)
 - Scheduled email reports (node-cron)
 - Audit logs (who did what and when)

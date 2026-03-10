@@ -50,13 +50,15 @@
 - Tasks: search by title, paginate with page/limit, returns totalTasks
 - Users: search by fullName, paginate with page/limit, returns totalUsers
 
+### API Documentation
+- Swagger / OpenAPI at `/api-docs` with Bearer (JWT) auth
+
 ---
 
 ## 🟡 Core Features
 - Real-time notifications (Socket.io)
 - Scheduled email reports (node-cron)
 - Audit logs (who did what and when)
-- API documentation (Swagger / OpenAPI)
 
 ---
 
@@ -91,8 +93,8 @@
 ## 🚀 Hireable Checklist (must complete before applying)
 
 - [ ] Deploy to Railway or Render (live URL is non-negotiable)
-- [ ] Swagger / OpenAPI docs live at `/api-docs`
-- [ ] README with live URL, API docs link, and setup instructions
-- [ ] Dashboard analytics working (proves MongoDB aggregation skill)
-- [ ] Search + pagination on at least one resource (proves production thinking)
+- [x] Swagger / OpenAPI docs live at `/api-docs`
+- [x] README with live URL, API docs link, and setup instructions
+- [x] Dashboard analytics working (proves MongoDB aggregation skill)
+- [x] Search + pagination on at least one resource (proves production thinking)
 - [ ] All In Progress items completed

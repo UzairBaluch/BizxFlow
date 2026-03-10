@@ -6,6 +6,15 @@ Designed for businesses that need role-based workforce management with real-time
 
 ---
 
+## Live
+
+| | URL |
+|---|-----|
+| **API** | _Add your live URL after deploy (e.g. `https://bizxflow.up.railway.app`)_ |
+| **API docs (Swagger)** | _Add link (e.g. `https://your-app.up.railway.app/api-docs`)_ |
+
+---
+
 ## Features
 
 - **Authentication** – Register, login, logout, refresh tokens, password reset via email
@@ -19,6 +28,7 @@ Designed for businesses that need role-based workforce management with real-time
 - **Request Logging** – morgan logs every request with method, route, status, and response time
 - **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
 - **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
+- **API Documentation** – Interactive Swagger UI at `/api-docs` with JWT (Bearer) auth
 
 ---
 
@@ -146,6 +156,8 @@ npm run dev
 ```
 
 Server starts at `http://localhost:8000`
+
+**API docs (local):** [http://localhost:8000/api-docs](http://localhost:8000/api-docs) — try endpoints and use **Authorize** with a login token.
 
 ---
 

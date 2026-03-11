@@ -10,7 +10,11 @@ import { swaggerSpec } from "./config/swagger.js";
 const app = express();
 
 // Health routes first (no middleware) so Railway always gets a response
-app.get("/", (_, res) => res.json({ ok: true, message: "BizxFlow API" }));
+app.get("/", (req, res) => {
+  console.log("[BizxFlow] GET / hit");
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).end(JSON.stringify({ ok: true, message: "BizxFlow API" }));
+});
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 app.get("/favicon.ico", (_, res) => res.status(204).end());
 

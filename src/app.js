@@ -24,6 +24,10 @@ app.use(express.static("public"));
 app.use(cookieParser());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Health check (no DB) – for Railway/proxy
+app.get("/", (_, res) => res.json({ ok: true, message: "BizxFlow API" }));
+app.get("/health", (_, res) => res.json({ status: "ok" }));
+
 app.use("/api/v1/users", userRouter);
 
 export { app };

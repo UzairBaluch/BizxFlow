@@ -5,13 +5,11 @@ import { app } from "./app.js";
 
 const PORT = process.env.PORT || 4000;
 
-connectDb()
-  .then(() => {
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server is running at : ${PORT}`);
-    });
-  })
-  .catch((error) => {
+// Start server first so Railway gets a response (avoids 502); then connect DB
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running at : ${PORT}`);
+  connectDb().catch((error) => {
     console.error("MONGODB connection failed:", error);
     process.exit(1);
   });
+});

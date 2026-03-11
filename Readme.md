@@ -10,8 +10,8 @@ Designed for businesses that need role-based workforce management with real-time
 
 | | URL |
 |---|-----|
-| **API** | _Add your live URL after deploy (e.g. `https://bizxflow.up.railway.app`)_ |
-| **API docs (Swagger)** | _Add link (e.g. `https://your-app.up.railway.app/api-docs`)_ |
+| **API** | https://bizxflow-production.up.railway.app |
+| **API docs (Swagger)** | https://bizxflow-production.up.railway.app/api-docs |
 
 ---
 

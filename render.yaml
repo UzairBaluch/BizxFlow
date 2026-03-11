@@ -1,0 +1,8 @@
+# Optional: use this if you deploy via Render Blueprint. Or create Web Service manually.
+services:
+  - type: web
+    name: bizxflow
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health

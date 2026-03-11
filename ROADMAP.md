@@ -53,6 +53,10 @@
 ### API Documentation
 - Swagger / OpenAPI at `/api-docs` with Bearer (JWT) auth
 
+### Deployment
+- Live on Railway: [bizxflow-production.up.railway.app](https://bizxflow-production.up.railway.app)
+- Swagger live at [/api-docs](https://bizxflow-production.up.railway.app/api-docs)
+
 ---
 
 ## 🟡 Core Features
@@ -76,7 +80,6 @@
 - Unit tests (Jest)
 - TypeScript conversion
 - Docker + CI/CD
-- Deployment
 
 ---
 
@@ -92,7 +95,7 @@
 
 ## 🚀 Hireable Checklist (must complete before applying)
 
-- [ ] Deploy to Railway or Render (live URL is non-negotiable)
+- [x] Deploy to Railway or Render (live URL is non-negotiable)
 - [x] Swagger / OpenAPI docs live at `/api-docs`
 - [x] README with live URL, API docs link, and setup instructions
 - [x] Dashboard analytics working (proves MongoDB aggregation skill)

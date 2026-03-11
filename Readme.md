@@ -10,8 +10,11 @@ Designed for businesses that need role-based workforce management with real-time
 
 | | URL |
 |---|-----|
-| **API** | https://bizxflow-production.up.railway.app |
-| **API docs (Swagger)** | https://bizxflow-production.up.railway.app/api-docs |
+| **API** | [https://bizxflow-production.up.railway.app](https://bizxflow-production.up.railway.app) |
+| **API docs (Swagger)** | [https://bizxflow-production.up.railway.app/api-docs](https://bizxflow-production.up.railway.app/api-docs) |
+| **Health** | [https://bizxflow-production.up.railway.app/health](https://bizxflow-production.up.railway.app/health) |
+
+**Try it:** Open [API docs](https://bizxflow-production.up.railway.app/api-docs) → **Authorize** with a token from `/login` → run any endpoint.
 
 ---
 
@@ -157,7 +160,7 @@ npm run dev
 
 Server starts at `http://localhost:8000`
 
-**API docs (local):** [http://localhost:8000/api-docs](http://localhost:8000/api-docs) — try endpoints and use **Authorize** with a login token.
+**API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with a token from `/login` to call protected endpoints.
 
 ---
 

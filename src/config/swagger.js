@@ -1,4 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import swaggerJSDoc from "swagger-jsdoc";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const options = {
   definition: {
@@ -24,6 +28,9 @@ const options = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ["./src/docs/*.js", "./src/routes/*.js"],
+  apis: [
+    path.join(__dirname, "../docs/*.js"),
+    path.join(__dirname, "../routes/*.js"),
+  ],
 };
 export const swaggerSpec = swaggerJSDoc(options);

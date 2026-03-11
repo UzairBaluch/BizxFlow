@@ -5,11 +5,11 @@ import { app } from "./app.js";
 
 const PORT = process.env.PORT || 4000;
 
-// Start server first so Railway gets a response; DB connects in background
+console.log("[BizxFlow] Starting, PORT=" + PORT);
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server is running at : ${PORT}`);
+  console.log("[BizxFlow] Server is running at : " + PORT);
   connectDb().catch((error) => {
     console.error("MONGODB connection failed:", error);
-    // Don't exit – server stays up for / and /health; fix MONGODB_URI and Atlas access
   });
 });

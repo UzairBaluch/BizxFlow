@@ -8,6 +8,12 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
 
 const app = express();
+
+// Health routes first (no middleware) so Railway always gets a response
+app.get("/", (_, res) => res.json({ ok: true, message: "BizxFlow API" }));
+app.get("/health", (_, res) => res.json({ status: "ok" }));
+app.get("/favicon.ico", (_, res) => res.status(204).end());
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "*",
@@ -23,10 +29,6 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Health check (no DB) – for Railway/proxy
-app.get("/", (_, res) => res.json({ ok: true, message: "BizxFlow API" }));
-app.get("/health", (_, res) => res.json({ status: "ok" }));
 
 app.use("/api/v1/users", userRouter);
 

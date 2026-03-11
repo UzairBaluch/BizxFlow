@@ -13,10 +13,8 @@ process.on("unhandledRejection", (reason, p) => {
 
 const PORT = process.env.PORT || 4000;
 
-console.log("[BizxFlow] Starting, PORT=" + PORT);
-
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("[BizxFlow] Server is running at : " + PORT);
+  console.log("Server running on port", PORT);
   connectDb().catch((error) => {
     console.error("MONGODB connection failed:", error);
   });

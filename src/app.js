@@ -32,4 +32,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1/users", userRouter);
 
+// Catch errors so the process doesn't crash on request
+app.use((err, req, res, next) => {
+  console.error("[BizxFlow] route error", err);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
 export { app };

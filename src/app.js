@@ -9,6 +9,11 @@ import userRouter from "./routes/user.routes.js";
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(`[REQ] ${req.method} ${req.path}`);
+  next();
+});
+
 // Health routes first (no middleware) so Railway always gets a response
 app.get("/", (req, res) => {
   console.log("[BizxFlow] GET / hit");

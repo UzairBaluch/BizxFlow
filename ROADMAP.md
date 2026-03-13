@@ -1,76 +1,61 @@
-# BizxFlow – Features
+# BizxFlow – Roadmap
 
-**Frontend vs backend:** See [FRONTEND-BACKEND-MAP.md](./FRONTEND-BACKEND-MAP.md) for what the UI uses vs what has no API yet.
+**Backend:** `bizxflow-production.up.railway.app` · **Frontend:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend)
 
 ---
 
 ## ✅ Done
 
-### Authentication
-- Register, login, logout
-- Access token + refresh token (HTTP-only cookies)
-- Password reset via email (token-based)
-
-### Roles & Access Control
-- Role-based access: Admin, Manager, Employee
-- Role checks on all protected routes
-
-### Attendance
-- Check-in / check-out per employee
-- Daily attendance records
-- Compound unique index (user + date) prevents duplicate records
-
-### Task Management
-- Create and assign tasks
-- Update task status
-- Email notification on assignment
-
-### Leave Management
-- Apply for leave
-- Approve / reject workflow (Admin/Manager)
-- Email notification on submission and status change
-
-### File Upload
-- Profile picture upload via Cloudinary + Multer
-
-### Security & Logging
-- Helmet security headers
-- Rate limiting on auth routes
-- Morgan request logging
-
-### User Management
-- Get all users (Admin only)
-- Update profile (name + profile picture)
-- Change password (verify current, set new)
-
-### Dashboard Analytics
-- Total employees, tasks, leaves, today's attendance
-- Tasks and leaves grouped by status (MongoDB aggregation)
-- All queries run in parallel with Promise.all
-
-### Search & Pagination
-- Tasks: search by title, paginate with page/limit, returns totalTasks
-- Users: search by fullName, paginate with page/limit, returns totalUsers
-
-### API Documentation
-- Swagger / OpenAPI at `/api-docs` with Bearer (JWT) auth
-
-### Deployment
-- Live on Railway: [bizxflow-production.up.railway.app](https://bizxflow-production.up.railway.app)
-- Swagger live at [/api-docs](https://bizxflow-production.up.railway.app/api-docs)
+- **Auth:** Register, login, logout, access + refresh token (HTTP-only cookies), password reset
+- **Roles:** Admin, Manager, Employee with role checks on routes
+- **Attendance:** Check-in/out, daily records, compound unique index
+- **Tasks:** Create, assign, update status, email on assignment
+- **Leave:** Apply, approve/reject, email on submit and status change
+- **File upload:** Profile picture via Cloudinary + Multer
+- **Security:** Helmet, rate limiting on auth, Morgan logging
+- **Users:** Get all (admin), update profile, change password
+- **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
+- **Search & pagination:** Tasks (title), Users (fullName)
+- **API docs:** Swagger at `/api-docs`
+- **Deploy:** Live on Railway
 
 ---
 
-## 🟡 Core Features
+## 🟡 To build (backend) – from frontend gaps
+
+Features the UI shows but have **no backend API yet**. Build these so frontend can connect.
+
+| Feature | Notes |
+|--------|--------|
+| **Notifications** | In-app + email (task assigned, leave status, etc.) |
+| **Announcements** | Company-wide from admin — CRUD, admin create, all read |
+| **Meetings** | Scheduler, calendar, reminders — meetings API |
+| **Meeting notes** | AI summary → action items (or simple CRUD first) |
+| **Team chat** | Real-time channels/DMs — Socket.io rooms + message history |
+| **AI Daily Briefing** | Morning summary — briefing API |
+| **Community posts** | Team feed, post/create — posts API |
+| **Performance / Analytics** | Insights, scores — analytics API (backend has basic counts) |
+| **Mood check-in** | Anonymous mood, manager trends — mood API |
+| **End-of-day report** | Submit + AI compile — report API |
+| **AI Workload balancer** | Overload detection — API |
+| **Natural language tasks** | “Remind X to…” — NL API |
+| **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
+
+**Suggested order:** Notifications → Announcements → then pick by priority (e.g. Meetings, Chat, Analytics).
+
+---
+
+## 🟡 Core (from original roadmap)
+
 - Real-time notifications (Socket.io)
 - Scheduled email reports (node-cron)
-- Audit logs (who did what and when)
+- Audit logs (who did what, when)
 
 ---
 
 ## 🟢 Advanced
 
-- Real-time group chat (Socket.io rooms + message history)
+- Real-time group chat (Socket.io rooms + history)
 - Slack / Discord alert integration
 - CSV exports (attendance, tasks, leave reports)
 
@@ -85,7 +70,7 @@
 
 ---
 
-## 💡 Maybe Later (if no job by August)
+## 💡 Maybe later
 
 - Organization / Company model
 - Multi-tenancy (orgId on all models)
@@ -95,11 +80,11 @@
 
 ---
 
-## 🚀 Hireable Checklist (must complete before applying)
+## 🚀 Hireable checklist
 
-- [x] Deploy to Railway or Render (live URL is non-negotiable)
-- [x] Swagger / OpenAPI docs live at `/api-docs`
-- [x] README with live URL, API docs link, and setup instructions
-- [x] Dashboard analytics working (proves MongoDB aggregation skill)
-- [x] Search + pagination on at least one resource (proves production thinking)
-- [ ] All In Progress items completed
+- [x] Deploy to Railway (live URL)
+- [x] Swagger at `/api-docs`
+- [x] README with live URL and setup
+- [x] Dashboard analytics (aggregation)
+- [x] Search + pagination on at least one resource
+- [ ] Core / to-build items completed as needed

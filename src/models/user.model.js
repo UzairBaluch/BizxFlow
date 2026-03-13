@@ -37,7 +37,7 @@ const userSchema = new Schema(
       type: String,
       enum: ["Admin", "Manager", "Employee"],
       default: "Employee",
-      required: true
+      required: true,
     },
     address: {
       type: String,
@@ -56,9 +56,9 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    refreshToken:{
-      type:String
-    }
+    refreshToken: {
+      type: String,
+    },
   },
 
   { timestamps: true }

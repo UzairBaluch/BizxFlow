@@ -16,6 +16,15 @@ Designed for businesses that need role-based workforce management with real-time
 
 **Try it:** Open [API docs](https://bizxflow-production.up.railway.app/api-docs) → **Authorize** with a token from `/login` → run any endpoint.
 
+### Frontend (full-stack)
+
+| | Link |
+|---|-----|
+| **Repo** | [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) — React + TypeScript + Vite, Tailwind, Zustand |
+| **App** | _Deploy with your domain (Vercel/Netlify); set `VITE_API_BASE_URL` to the API URL above_ |
+
+This repo is the **backend API**; the frontend consumes it for auth, dashboard, tasks, leave, attendance, and users.
+
 ---
 
 ## Features

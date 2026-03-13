@@ -1,5 +1,7 @@
 # BizxFlow – Features
 
+**Frontend vs backend:** See [FRONTEND-BACKEND-MAP.md](./FRONTEND-BACKEND-MAP.md) for what the UI uses vs what has no API yet.
+
 ---
 
 ## ✅ Done

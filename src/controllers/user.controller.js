@@ -19,19 +19,20 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User with this email already exists");
   }
 
-  const pictureLocalPath = req.files?.picture[0]?.path;
+  const pictureLocalPath = req.files?.picture?.[0]?.path;
+  let pictureUrl = "";
 
-  if (!pictureLocalPath) {
-    throw new ApiError(400, "Picture is required");
+  if (pictureLocalPath) {
+    const pictureRef = await uploadOnCloudinary(pictureLocalPath);
+    if (!pictureRef) {
+      throw new ApiError(500, "Failed to upload picture");
+    }
+    pictureUrl = pictureRef.url;
   }
 
-  const pictureRef = await uploadOnCloudinary(pictureLocalPath);
-  if (!pictureRef) {
-    throw new ApiError(500, "Failed to upload picture");
-  }
   const user = await User.create({
     fullName,
-    picture: pictureRef.url,
+    ...(pictureUrl && { picture: pictureUrl }),
     email,
     password,
     role: role || "Employee",
@@ -134,4 +135,10 @@ const updateProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, uppdatePicture, "Profile updated successfully"));
 });
 
-export { registerUser, getAllUsers, changePassword, updateProfile };
+const getMe = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user: req.user }, "Current user"));
+});
+
+export { registerUser, getAllUsers, changePassword, updateProfile, getMe };

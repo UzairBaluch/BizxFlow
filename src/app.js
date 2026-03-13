@@ -31,7 +31,12 @@ app.use("/api/v1/users", userRouter);
 
 app.use((err, req, res, next) => {
   console.error("[BizxFlow] route error", err);
-  res.status(500).json({ error: "Internal Server Error" });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(statusCode).json({
+    error: message,
+    ...(err.errors?.length && { errors: err.errors }),
+  });
 });
 
 export { app };

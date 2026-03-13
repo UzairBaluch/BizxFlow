@@ -4,6 +4,7 @@ import {
   changePassword,
   getAllUsers,
   registerUser,
+  getMe,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middelware.js";
 import { loginUser } from "../controllers/loginUser.controller.js";
@@ -48,6 +49,7 @@ router.route("/register").post(
 
 router.route("/login").post(authLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/me").get(verifyJWT, getMe);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/checkIn").post(verifyJWT, checkInUser);
 router.route("/checkOut").post(verifyJWT, checkOutUser);

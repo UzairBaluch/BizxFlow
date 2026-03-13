@@ -10,6 +10,13 @@ const generateAccessAndRefreshToken = async (userId) => {
     await user.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
+    console.error("[BizxFlow] generateAccessAndRefreshToken error", error);
+    if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
+      throw new ApiError(
+        500,
+        "Server misconfiguration: token secrets not set (check ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET)"
+      );
+    }
     throw new ApiError(
       500,
       "Something went wrong while generating access and refresh token"

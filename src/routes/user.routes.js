@@ -3,7 +3,6 @@ import {
   updateProfile,
   changePassword,
   getAllUsers,
-  registerUser,
   getMe,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middelware.js";
@@ -38,17 +37,18 @@ import {
   announcements,
   getAnnouncements,
 } from "../controllers/announcement.controller.js";
+import { registerCompany, updateCompany } from "../controllers/company.controller.js";
 
 const router = Router();
 
 router.route("/register").post(
   upload.fields([
     {
-      name: "picture",
+      name: "logo",
     },
   ]),
   authLimiter,
-  registerUser
+  registerCompany
 );
 
 router.route("/login").post(authLimiter, loginUser);
@@ -70,6 +70,11 @@ router.route("/forgot-password").post(authLimiter, forgotPassword);
 router.route("/reset-password/:token").post(authLimiter, resetPassword);
 router.route("/all-users").get(verifyJWT, getAllUsers);
 router.route("/change-password").patch(verifyJWT, changePassword);
+router.route("/company").patch(
+  verifyJWT,
+  upload.fields([{ name: "logo" }]),
+  updateCompany
+);
 router.route("/update-profile").patch(
   verifyJWT,
   upload.fields([

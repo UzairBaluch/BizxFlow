@@ -16,6 +16,7 @@
 - **Users:** Get all (admin), update profile, change password
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
+- **Announcements:** Admin/Manager create, all auth users list (newest first)
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 
@@ -28,7 +29,6 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | Feature | Notes |
 |--------|--------|
 | **Notifications** | In-app + email (task assigned, leave status, etc.) |
-| **Announcements** | Company-wide from admin — CRUD, admin create, all read |
 | **Meetings** | Scheduler, calendar, reminders — meetings API |
 | **Meeting notes** | AI summary → action items (or simple CRUD first) |
 | **Team chat** | Real-time channels/DMs — Socket.io rooms + message history |
@@ -41,7 +41,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | **Natural language tasks** | “Remind X to…” — NL API |
 | **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
 
-**Suggested order:** Notifications → Announcements → then pick by priority (e.g. Meetings, Chat, Analytics).
+**Suggested order:** Notifications → then pick by priority (e.g. Meetings, Chat, Analytics).
 
 ---
 

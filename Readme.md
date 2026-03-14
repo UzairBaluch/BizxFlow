@@ -39,6 +39,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 - **Security** – JWT auth, bcrypt password hashing, helmet HTTP headers, rate limiting on auth routes
 - **Request Logging** – morgan logs every request with method, route, status, and response time
 - **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
+- **Announcements** – Admin/Manager create company-wide announcements; any authenticated user can list (newest first)
 - **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
 - **API Documentation** – Interactive Swagger UI at `/api-docs` with JWT (Bearer) auth
 
@@ -119,6 +120,12 @@ src/
 | Method | Endpoint | Access |
 |--------|----------|--------|
 | GET | `/api/v1/users/dashboard` | Admin/Manager |
+
+### Announcements
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| POST | `/api/v1/users/announcements` | Admin/Manager |
+| GET | `/api/v1/users/announcements` | Auth |
 
 ---
 

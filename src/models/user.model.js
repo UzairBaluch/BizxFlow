@@ -26,6 +26,11 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     picture: {
       type: String,
       default: "",
@@ -80,6 +85,7 @@ userSchema.methods.generateAccessToken = async function () {
       _id: this._id,
       email: this.email,
       fullname: this.fullName,
+      type: "user",
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

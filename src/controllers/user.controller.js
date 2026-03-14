@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { User } from "../models/user.model.js";
-import { parse } from "path";
+import { Company } from "../models/company.model.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
@@ -49,21 +49,17 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "user registered successfully"));
 });
 const getAllUsers = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    throw new ApiError(400, "No user found");
+  const companyId = req.company?._id ?? req.user?.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
   }
-  const role = req.user.role;
-
-  if (role !== "Admin") {
+  if (req.user && req.user.role !== "Admin" && req.user.role !== "Manager") {
     throw new ApiError(403, "Unauthorized request");
   }
   const { page, limit, search } = req.query;
-
   const pageNum = parseInt(page) || 1;
   const limitNum = parseInt(limit) || 10;
-  let filter = {};
-
+  const filter = { companyId };
   if (search) {
     filter.fullName = { $regex: search, $options: "i" };
   }
@@ -72,12 +68,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
     .select("-password -refreshToken")
     .skip((pageNum - 1) * limitNum)
     .limit(limitNum);
-
   const totalUsers = await User.countDocuments(filter);
 
-  if (allUsers.length === 0) {
-    throw new ApiError(404, "No users found");
-  }
   return res
     .status(200)
     .json(
@@ -90,20 +82,27 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  if ([currentPassword, newPassword].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "Current and New password  are required");
+  if (!currentPassword?.trim() || !newPassword?.trim()) {
+    throw new ApiError(400, "Current and new password are required");
   }
   if (newPassword.length < 6) {
     throw new ApiError(400, "New password must be more than 6 characters");
   }
+  if (req.company) {
+    const company = await Company.findById(req.company._id);
+    if (!company) throw new ApiError(404, "Company not found");
+    const isValid = await company.isPasswordCorrect(currentPassword);
+    if (!isValid) throw new ApiError(400, "Current password is incorrect");
+    company.password = newPassword;
+    await company.save();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Company password changed successfully"));
+  }
   const user = await User.findById(req.user?._id);
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
+  if (!user) throw new ApiError(404, "User not found");
   const isPasswordValid = await user.isPasswordCorrect(currentPassword);
-  if (!isPasswordValid) {
-    throw new ApiError(400, "password is incorrect");
-  }
+  if (!isPasswordValid) throw new ApiError(400, "Current password is incorrect");
   user.password = newPassword;
   await user.save();
   return res
@@ -111,6 +110,9 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 const updateProfile = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new ApiError(403, "User account required for profile update");
+  }
   const { fullName } = req.body;
   const pictureLocalPath = req.files?.picture?.[0]?.path;
   let pictureUrl;
@@ -136,9 +138,14 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 const getMe = asyncHandler(async (req, res) => {
+  if (req.company) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { company: req.company, type: "company" }, "Current account"));
+  }
   return res
     .status(200)
-    .json(new ApiResponse(200, { user: req.user }, "Current user"));
+    .json(new ApiResponse(200, { user: req.user, type: "user" }, "Current user"));
 });
 
 export { registerUser, getAllUsers, changePassword, updateProfile, getMe };

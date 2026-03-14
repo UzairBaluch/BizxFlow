@@ -2,7 +2,10 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { Company } from "../models/company.model.js";
 import { generateAccessAndRefreshToken } from "../utils/generateToken.js";
+
+const options = { httpOnly: true, secure: true };
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -10,10 +13,34 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "email and password are required");
   }
 
-  const existedUser = await User.findOne({
-    $or: [{ email }],
-  });
+  const existedCompany = await Company.findOne({ email });
+  if (existedCompany) {
+    const isPasswordValid = await existedCompany.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+      throw new ApiError(401, "password is incorrect");
+    }
+    const accessToken = await existedCompany.generateAccessToken();
+    const refreshToken = await existedCompany.generateRefreshToken();
+    const company = await Company.findById(existedCompany._id).select("-password");
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            company,
+            accessToken,
+            refreshToken,
+            type: "company",
+          },
+          "Company logged in successfully"
+        )
+      );
+  }
 
+  const existedUser = await User.findOne({ email });
   if (!existedUser) {
     throw new ApiError(400, "No user found with this email");
   }
@@ -28,10 +55,6 @@ const loginUser = asyncHandler(async (req, res) => {
   const loggedUser = await User.findById(existedUser._id).select(
     "-password -refreshToken"
   );
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
 
   return res
     .status(200)
@@ -44,6 +67,7 @@ const loginUser = asyncHandler(async (req, res) => {
           user: loggedUser,
           accessToken,
           refreshToken,
+          type: "user",
         },
         "User logged in successfully"
       )

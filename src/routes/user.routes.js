@@ -34,6 +34,10 @@ import {
 } from "../controllers/passwordReset.controller.js";
 import { authLimiter } from "../middlewares/rateLimiter.middelware.js";
 import { getDashboard } from "../controllers/dashboard.controller.js";
+import {
+  announcements,
+  getAnnouncements,
+} from "../controllers/announcement.controller.js";
 
 const router = Router();
 
@@ -76,5 +80,9 @@ router.route("/update-profile").patch(
   updateProfile
 );
 router.route("/dashboard").get(verifyJWT, getDashboard);
+router
+  .route("/announcements")
+  .post(verifyJWT, announcements)
+  .get(verifyJWT, getAnnouncements);
 
 export default router;

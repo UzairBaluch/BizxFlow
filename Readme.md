@@ -29,8 +29,9 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Authentication** – Register, login, logout, refresh tokens, password reset via email
-- **Role-Based Access Control** – Admin, Manager, Employee roles with protected routes
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager (add-user endpoint planned).
+- **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
+- **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
 - **Attendance Tracking** – Check-in, check-out, view records by date range
 - **Task Management** – Create and assign tasks, update status, email notifications
 - **Leave Management** – Apply for leave, approve/reject workflow, email notifications
@@ -79,9 +80,10 @@ src/
 ### Auth
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/register` | Public |
-| POST | `/api/v1/users/login` | Public |
-| POST | `/api/v1/users/logout` | Auth |
+| POST | `/api/v1/users/register` | Public (company signup: email, password, companyName, optional logo) |
+| POST | `/api/v1/users/login` | Public (returns company or user + `type`) |
+| POST | `/api/v1/users/logout` | Auth (company or user) |
+| GET | `/api/v1/users/me` | Auth (returns company or user + `type`) |
 | POST | `/api/v1/users/refresh-token` | Public |
 | POST | `/api/v1/users/forgot-password` | Public |
 | POST | `/api/v1/users/reset-password/:token` | Public |
@@ -109,12 +111,17 @@ src/
 | GET | `/api/v1/users/all-leaves` | Admin/Manager |
 | GET | `/api/v1/users/my-leaves` | Auth |
 
+### Company (company account only)
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| PATCH | `/api/v1/users/company` | Company (update name, logo) |
+
 ### Users
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| GET | `/api/v1/users/all-users` | Admin |
-| PATCH | `/api/v1/users/change-password` | Auth |
-| PATCH | `/api/v1/users/update-profile` | Auth |
+| GET | `/api/v1/users/all-users` | Company or Admin/Manager (scoped by company) |
+| PATCH | `/api/v1/users/change-password` | Auth (company or user) |
+| PATCH | `/api/v1/users/update-profile` | User only |
 
 ### Dashboard
 | Method | Endpoint | Access |

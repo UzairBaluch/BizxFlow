@@ -29,7 +29,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager (add-user endpoint planned).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; tasks, leave, attendance, announcements, and dashboard will be scoped next, then new features (see Roadmap below).
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
 - **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
 - **Attendance Tracking** – Check-in, check-out, view records by date range
@@ -120,6 +120,7 @@ src/
 | Method | Endpoint | Access |
 |--------|----------|--------|
 | GET | `/api/v1/users/all-users` | Company or Admin/Manager (scoped by company) |
+| POST | `/api/v1/users/add-user` | Company or Admin/Manager (body: fullName, email, password, role; optional picture) |
 | PATCH | `/api/v1/users/change-password` | Auth (company or user) |
 | PATCH | `/api/v1/users/update-profile` | User only |
 
@@ -133,6 +134,13 @@ src/
 |--------|----------|--------|
 | POST | `/api/v1/users/announcements` | Admin/Manager |
 | GET | `/api/v1/users/announcements` | Auth |
+
+---
+
+## Roadmap
+
+- **Multi-tenancy (current)** – Scope tasks, leave, attendance, announcements, and dashboard by company (`companyId`) so each tenant only sees its own data. Then move to new features.
+- **Next features** – Notifications (in-app + email), then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
 
 ---
 

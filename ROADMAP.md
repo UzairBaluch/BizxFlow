@@ -19,6 +19,23 @@
 - **Announcements:** Admin/Manager create, all auth users list (newest first)
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
+- **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company
+- **Add user:** Company or Admin/Manager add users (fullName, email, password, role; optional picture)
+- **Multi-tenancy (users):** all-users and add-user scoped by `companyId`
+
+---
+
+## 🔲 Multi-tenancy – scope by company (do before new features)
+
+Data isolation so each company only sees its own records. Add `companyId` where needed and filter all lists/counts by company.
+
+- [ ] **Attendance** – Add `companyId` to model; set on check-in; filter `getAllAttendance` by company
+- [ ] **Leave** – Add `companyId` to model; set on submit; filter `getAllLeaves` and review flow by company
+- [ ] **Task** – Add `companyId` to model; set on create; ensure `assignedTo` is same company; filter any “all tasks” by company
+- [ ] **Announcements** – Add `companyId` to model; set on create; filter `getAnnouncements` by company
+- [ ] **Dashboard** – Scope all counts (employees, tasks, leaves, attendance) by `companyId`
+
+After these are done, move on to new features below.
 
 ---
 
@@ -41,7 +58,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | **Natural language tasks** | “Remind X to…” — NL API |
 | **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
 
-**Suggested order:** Notifications → then pick by priority (e.g. Meetings, Chat, Analytics).
+**Suggested order:** Finish multi-tenancy scope above first → then Notifications → then pick by priority (e.g. Meetings, Chat, Analytics).
 
 ---
 
@@ -72,8 +89,6 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 
 ## 💡 Maybe later
 
-- Organization / Company model
-- Multi-tenancy (orgId on all models)
 - Company onboarding flow
 - Stripe subscription + billing
 - Plan limits enforcement middleware

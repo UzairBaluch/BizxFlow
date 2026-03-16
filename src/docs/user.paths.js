@@ -2,7 +2,7 @@
  * @swagger
  * /api/v1/users/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register a company (company signup only)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -10,15 +10,15 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
- *             required: [email, password, fullName]
+ *             required: [email, password, companyName]
  *             properties:
  *               email: { type: string, format: email }
  *               password: { type: string }
- *               fullName: { type: string }
- *               picture: { type: string, format: binary }
+ *               companyName: { type: string }
+ *               logo: { type: string, format: binary }
  *     responses:
- *       201: { description: User registered successfully }
- *       400: { description: Validation error }
+ *       201: { description: Company registered successfully }
+ *       400: { description: Validation error or email already exists }
  */
 
 /**
@@ -278,6 +278,33 @@
  *     responses:
  *       200: { description: List of users }
  *       401: { description: Unauthorized }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/add-user:
+ *   post:
+ *     summary: Add a user (Company, Admin or Manager only)
+ *     tags: [Users]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [fullName, email, password, role]
+ *             properties:
+ *               fullName: { type: string }
+ *               email: { type: string, format: email }
+ *               password: { type: string }
+ *               role: { type: string, enum: ["Admin", "Manager", "Employee"] }
+ *               picture: { type: string, format: binary }
+ *     responses:
+ *       201: { description: User added successfully }
+ *       400: { description: Validation error or email already exists }
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden (not Company/Admin/Manager) }
  */
 
 /**

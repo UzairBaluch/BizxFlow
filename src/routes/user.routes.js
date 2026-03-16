@@ -37,8 +37,11 @@ import {
   announcements,
   getAnnouncements,
 } from "../controllers/announcement.controller.js";
-import { registerCompany, updateCompany } from "../controllers/company.controller.js";
-
+import {
+  registerCompany,
+  updateCompany,
+} from "../controllers/company.controller.js";
+import { addUser } from "../controllers/addUser.controller.js";
 const router = Router();
 
 router.route("/register").post(
@@ -50,7 +53,15 @@ router.route("/register").post(
   authLimiter,
   registerCompany
 );
-
+router.route("/add-user").post(
+  verifyJWT,
+  upload.fields([
+    {
+      name: "picture",
+    },
+  ]),
+  addUser
+);
 router.route("/login").post(authLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/me").get(verifyJWT, getMe);
@@ -70,11 +81,9 @@ router.route("/forgot-password").post(authLimiter, forgotPassword);
 router.route("/reset-password/:token").post(authLimiter, resetPassword);
 router.route("/all-users").get(verifyJWT, getAllUsers);
 router.route("/change-password").patch(verifyJWT, changePassword);
-router.route("/company").patch(
-  verifyJWT,
-  upload.fields([{ name: "logo" }]),
-  updateCompany
-);
+router
+  .route("/company")
+  .patch(verifyJWT, upload.fields([{ name: "logo" }]), updateCompany);
 router.route("/update-profile").patch(
   verifyJWT,
   upload.fields([

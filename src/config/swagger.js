@@ -47,8 +47,68 @@ const apiPaths = options.apis;
 console.log("[Swagger] apis:", apiPaths);
 const swaggerSpec = swaggerJSDoc(options);
 
-// Ensure announcements path is always present in Swagger UI
+// Ensure paths are always present in Swagger UI
 if (!swaggerSpec.paths) swaggerSpec.paths = {};
+const registerPath = "/api/v1/users/register";
+swaggerSpec.paths[registerPath] = {
+  post: {
+    summary: "Register a company (company signup only)",
+    tags: ["Auth"],
+    requestBody: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            type: "object",
+            required: ["email", "password", "companyName"],
+            properties: {
+              email: { type: "string", format: "email" },
+              password: { type: "string" },
+              companyName: { type: "string" },
+              logo: { type: "string", format: "binary" },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      201: { description: "Company registered successfully" },
+      400: { description: "Validation error or email already exists" },
+    },
+  },
+};
+const addUserPath = "/api/v1/users/add-user";
+swaggerSpec.paths[addUserPath] = {
+  post: {
+    summary: "Add a user (Company, Admin or Manager only)",
+    tags: ["Users"],
+    security: [{ bearerAuth: [] }],
+    requestBody: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            type: "object",
+            required: ["fullName", "email", "password", "role"],
+            properties: {
+              fullName: { type: "string" },
+              email: { type: "string", format: "email" },
+              password: { type: "string" },
+              role: { type: "string", enum: ["Admin", "Manager", "Employee"] },
+              picture: { type: "string", format: "binary" },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      201: { description: "User added successfully" },
+      400: { description: "Validation error or email already exists" },
+      401: { description: "Unauthorized" },
+      403: { description: "Forbidden" },
+    },
+  },
+};
 const annPath = "/api/v1/users/announcements";
 swaggerSpec.paths[annPath] = {
     post: {

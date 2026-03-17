@@ -7,6 +7,10 @@ import { date } from "../utils/DateMaker.js";
 
 const checkInUser = asyncHandler(async (req, res) => {
   const user = req.user?._id;
+  const company = req.user.companyId;
+  if (!company) {
+    throw new ApiError(403, "Unauthorized request");
+  }
   if (!user) {
     throw new ApiError(400, "User not found");
   }
@@ -28,18 +32,22 @@ const checkInUser = asyncHandler(async (req, res) => {
 
   const userRecord = await Attendance.create({
     user,
+    companyId: company,
     checkIn: new Date(),
     date: startDay,
   });
 
   if (!userRecord) {
-    throw new ApiError(500, "Something went wrong while registering attendance");
+    throw new ApiError(
+      500,
+      "Something went wrong while registering attendance"
+    );
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, userRecord, "attendace registered successfully")
+      new ApiResponse(200, userRecord, "Attendance registered successfully")
     );
 });
 
@@ -106,16 +114,23 @@ const checkRecord = asyncHandler(async (req, res) => {
     );
 });
 const getAllAttendance = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    throw new ApiError(401, "Unauthorized ");
-  }
-  if (req.user.role !== "Admin" && req.user.role !== "Manager") {
+  const companyId = req.company?._id ?? req.user?.companyId;
+
+  if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
+
+  if (
+    !req.company &&
+    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+  ) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
   const { from, to } = req.query;
   const { startDate, endDate } = dateRange(from, to);
   const recordFind = await Attendance.find({
+    companyId,
     date: { $gte: startDate, $lte: endDate },
   })
     .populate("user", "fullName email")

@@ -14,6 +14,11 @@ const attendanceSchema = new Schema(
     checkOut: {
       type: Date,
     },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     status: {
       type: String,
       enum: ["Present", "Absent", "Late"],

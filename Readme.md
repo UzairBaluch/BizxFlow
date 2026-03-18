@@ -29,7 +29,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; tasks, leave, attendance, announcements, and dashboard will be scoped next, then new features (see Roadmap below).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; attendance is scoped now, then tasks, leave, announcements, and dashboard (see Roadmap below).
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
 - **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
 - **Attendance Tracking** – Check-in, check-out, view records by date range
@@ -94,7 +94,7 @@ src/
 | POST | `/api/v1/users/checkIn` | Employee |
 | POST | `/api/v1/users/checkOut` | Employee |
 | GET | `/api/v1/users/check-record` | Auth |
-| GET | `/api/v1/users/record-all` | Admin/Manager |
+| GET | `/api/v1/users/record-all` | Company or Admin/Manager |
 
 ### Tasks
 | Method | Endpoint | Access |

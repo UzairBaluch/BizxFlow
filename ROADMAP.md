@@ -29,7 +29,7 @@
 
 Data isolation so each company only sees its own records. Add `companyId` where needed and filter all lists/counts by company.
 
-- [ ] **Attendance** – Add `companyId` to model; set on check-in; filter `getAllAttendance` by company
+- [x] **Attendance** – Add `companyId` to model; set on check-in; filter `getAllAttendance` by company
 - [ ] **Leave** – Add `companyId` to model; set on submit; filter `getAllLeaves` and review flow by company
 - [ ] **Task** – Add `companyId` to model; set on create; ensure `assignedTo` is same company; filter any “all tasks” by company
 - [ ] **Announcements** – Add `companyId` to model; set on create; filter `getAnnouncements` by company

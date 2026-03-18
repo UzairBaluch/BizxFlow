@@ -38,13 +38,6 @@ const checkInUser = asyncHandler(async (req, res) => {
     date: startDay,
   });
 
-  if (!userRecord) {
-    throw new ApiError(
-      500,
-      "Something went wrong while registering attendance"
-    );
-  }
-
   return res
     .status(200)
     .json(

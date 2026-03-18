@@ -7,12 +7,12 @@ import { date } from "../utils/DateMaker.js";
 
 const checkInUser = asyncHandler(async (req, res) => {
   const user = req.user?._id;
-  const company = req.user.companyId;
+  const company = req.user?.companyId;
   if (!company) {
     throw new ApiError(403, "Unauthorized request");
   }
   if (!user) {
-    throw new ApiError(400, "User not found");
+    throw new ApiError(401, "Unauthorized request");
   }
 
   const { role } = req.user;
@@ -22,12 +22,13 @@ const checkInUser = asyncHandler(async (req, res) => {
 
   const { startDay, endDay } = date();
   const recordAttendance = await Attendance.findOne({
+    companyId: company,
     user: user,
     date: { $gte: startDay, $lte: endDay },
   });
 
   if (recordAttendance) {
-    throw new ApiError(401, "Record already exists");
+    throw new ApiError(409, "Record already exists");
   }
 
   const userRecord = await Attendance.create({
@@ -53,6 +54,10 @@ const checkInUser = asyncHandler(async (req, res) => {
 
 const checkOutUser = asyncHandler(async (req, res) => {
   const user = req.user?._id;
+  const company = req.user?.companyId;
+  if (!company) {
+    throw new ApiError(403, "Unauthorized request");
+  }
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
   }
@@ -64,16 +69,17 @@ const checkOutUser = asyncHandler(async (req, res) => {
 
   const { startDay, endDay } = date();
   const recordAttendance = await Attendance.findOne({
+    companyId: company,
     user: user,
     date: { $gte: startDay, $lte: endDay },
   });
 
   if (!recordAttendance) {
-    throw new ApiError(400, "No check-in record found");
+    throw new ApiError(404, "No check-in record found");
   }
 
   if (recordAttendance.checkOut) {
-    throw new ApiError(400, "Already checked out");
+    throw new ApiError(409, "Already checked out");
   }
   const updatedRecord = await Attendance.findByIdAndUpdate(
     recordAttendance?._id,
@@ -94,12 +100,17 @@ const checkOutUser = asyncHandler(async (req, res) => {
 
 const checkRecord = asyncHandler(async (req, res) => {
   const user = req.user?._id;
+  const company = req.user?.companyId;
+  if (!company) {
+    throw new ApiError(403, "Unauthorized request");
+  }
   if (!user) {
-    throw new ApiError(400, "User not found");
+    throw new ApiError(401, "Unauthorized request");
   }
   const { from, to } = req.query;
   const { startDate, endDate } = dateRange(from, to);
   const recordAttendance = await Attendance.find({
+    companyId: company,
     user: user,
     date: { $gte: startDate, $lte: endDate },
   });

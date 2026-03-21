@@ -119,5 +119,7 @@ dist
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
 
-# Planning (keep local only)
-ROADMAP.md
+# Extra docs (tracked in git: Readme.md, ROADMAP.md only)
+CONTEXT.md
+docs/
+.cursor/

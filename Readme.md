@@ -193,6 +193,8 @@ Server starts at `http://localhost:8000`
 
 **API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with `Bearer <accessToken>` from `POST /api/v1/users/login` (`data.accessToken`). Raw OpenAPI JSON: `/api-docs.json` (import into Postman, Insomnia, or codegen).
 
+**Frontend:** Use **Swagger** (`/api-docs`, `/api-docs.json`) for contracts; see **ROADMAP.md** for what is shipped vs planned.
+
 ---
 
 ## Author

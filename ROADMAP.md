@@ -39,9 +39,24 @@ Data isolation: each company only sees its own records via `companyId` on models
 
 ---
 
+## 🔒 Rule for every new backend feature (multi-tenancy)
+
+**Do not ship a new domain without tenant isolation.** When you add Notifications, Meetings, Chat, etc.:
+
+1. **Model** – Add `companyId` (ref `Company`, required unless truly global).
+2. **Create** – Set `companyId` from `req.company?._id ?? req.user?.companyId` (same pattern as tasks/leaves/announcements).
+3. **Read / list / update / delete** – Filter or verify `companyId` **before** returning or mutating data (use `.toString()` for comparisons).
+4. **Auth** – Decide if the action is allowed for **company JWT**, **Admin/Manager**, **Employee**, or a combo; mirror existing controllers.
+5. **Cross-tenant links** – Any `userId` / foreign key must belong to the same `companyId` (validate like task `assignedTo`).
+6. **Docs** – Update Swagger (`src/docs/*.paths.js`, `src/config/swagger.js`) when the API is stable.
+
+Use **attendance**, **leave**, **task**, and **announcement** controllers as templates.
+
+---
+
 ## 🟡 To build (backend) – from frontend gaps
 
-Features the UI shows but have **no backend API yet**. Build these so frontend can connect.
+Features the UI shows but have **no backend API yet**. Build these so frontend can connect — **apply the multi-tenancy rule above to each.**
 
 | Feature | Notes |
 |--------|--------|
@@ -58,7 +73,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | **Natural language tasks** | “Remind X to…” — NL API |
 | **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
 
-**Suggested order:** Finish multi-tenancy scope above first → then Notifications → then pick by priority (e.g. Meetings, Chat, Analytics).
+**Suggested order:** **Notifications** (tenant-scoped) → then by priority (e.g. Meetings, Chat, Analytics) — each with `companyId` + filters from day one.
 
 ---
 

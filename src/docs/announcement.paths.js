@@ -2,7 +2,7 @@
  * @swagger
  * /api/v1/users/announcements:
  *   post:
- *     summary: Create announcement (Admin/Manager only)
+ *     summary: Create announcement (Company or Admin/Manager; tenant-scoped)
  *     tags: [Announcements]
  *     security:
  *       - bearerAuth: []
@@ -22,26 +22,23 @@
  *                 type: string
  *     responses:
  *       201:
- *         description: Announcement created
+ *         description: Announcement created (ApiResponse)
  *       400:
  *         description: Title and body required
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Admin or Manager only
- */
-
-/**
- * @swagger
- * /api/v1/users/announcements:
+ *         description: Forbidden (not Company/Admin/Manager)
  *   get:
- *     summary: List all announcements
+ *     summary: List announcements for your company (newest first)
  *     tags: [Announcements]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of announcements (newest first)
+ *         description: Array of announcements, newest first (ApiResponse)
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (no company context)
  */

@@ -13,29 +13,29 @@
 - **Leave:** Apply, approve/reject, email on submit and status change
 - **File upload:** Profile picture via Cloudinary + Multer
 - **Security:** Helmet, rate limiting on auth, Morgan logging
-- **Users:** Get all (admin), update profile, change password
+- **Users:** List users (company or Admin/Manager, tenant-scoped), update profile, change password
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
-- **Announcements:** Admin/Manager create, all auth users list (newest first)
+- **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company
 - **Add user:** Company or Admin/Manager add users (fullName, email, password, role; optional picture)
-- **Multi-tenancy (users):** all-users and add-user scoped by `companyId`
+- **Multi-tenancy:** Attendance, leave, tasks, announcements, dashboard, all-users, and add-user scoped by `companyId` (see checklist below)
 
 ---
 
-## 🔲 Multi-tenancy – scope by company (do before new features)
+## ✅ Multi-tenancy – scope by company (complete)
 
-Data isolation so each company only sees its own records. Add `companyId` where needed and filter all lists/counts by company.
+Data isolation: each company only sees its own records via `companyId` on models and filtered queries.
 
-- [x] **Attendance** – Add `companyId` to model; set on check-in; filter `getAllAttendance` by company
-- [ ] **Leave** – Add `companyId` to model; set on submit; filter `getAllLeaves` and review flow by company
-- [ ] **Task** – Add `companyId` to model; set on create; ensure `assignedTo` is same company; filter any “all tasks” by company
-- [ ] **Announcements** – Add `companyId` to model; set on create; filter `getAnnouncements` by company
-- [ ] **Dashboard** – Scope all counts (employees, tasks, leaves, attendance) by `companyId`
+- [x] **Attendance** – `companyId` on model; set on check-in; `record-all` filtered by company (Company or Admin/Manager)
+- [x] **Leave** – `companyId` on model; submit/review/list flows tenant-safe
+- [x] **Task** – `companyId` on create; assignee same company; my-tasks filtered by company
+- [x] **Announcements** – `companyId` on create; list filtered by company
+- [x] **Dashboard** – Counts scoped by manager’s `companyId` (Admin/Manager user JWT)
 
-After these are done, move on to new features below.
+**Note:** Older DB rows without `companyId` may need a one-time migration before strict production use.
 
 ---
 

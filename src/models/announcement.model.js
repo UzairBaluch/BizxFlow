@@ -10,10 +10,18 @@ const announcementSchema = new Schema(
       type: String,
       required: true,
     },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+    },
+    createdByCompany: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
     },
   },
   { timestamps: true }

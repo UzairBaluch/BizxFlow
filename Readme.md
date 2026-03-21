@@ -29,7 +29,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; attendance is scoped now, then tasks, leave, announcements, and dashboard (see Roadmap below).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; attendance, leave, tasks, announcements, and dashboard counts are scoped by `companyId` (see Roadmap).
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
 - **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
 - **Attendance Tracking** – Check-in, check-out, view records by date range
@@ -139,7 +139,7 @@ src/
 
 ## Roadmap
 
-- **Multi-tenancy (current)** – Scope tasks, leave, attendance, announcements, and dashboard by company (`companyId`) so each tenant only sees its own data. Then move to new features.
+- **Multi-tenancy** – Tasks, leave, attendance, announcements, and dashboard are scoped by `companyId`. Next: new features (notifications, etc.).
 - **Next features** – Notifications (in-app + email), then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
 
 ---
@@ -191,7 +191,7 @@ npm run dev
 
 Server starts at `http://localhost:8000`
 
-**API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with a token from `/login` to call protected endpoints.
+**API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with `Bearer <accessToken>` from `POST /api/v1/users/login` (`data.accessToken`). Raw OpenAPI JSON: `/api-docs.json` (import into Postman, Insomnia, or codegen).
 
 ---
 

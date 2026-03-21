@@ -229,6 +229,37 @@
 
 /**
  * @swagger
+ * /api/v1/users/all-tasks:
+ *   get:
+ *     summary: All company tasks (paginated)
+ *     description: "Company JWT or Admin/Manager user. Same data shape as GET /tasks (tasks, totalTasks, page, limit). Optional status filter."
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Case-insensitive title filter
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [Pending, "In Progress", Done] }
+ *         description: Optional exact status filter
+ *     responses:
+ *       200:
+ *         description: "{ tasks, totalTasks, page, limit } (tasks may include populated assignedTo, createdBy, createdByCompany)"
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden (not Company/Admin/Manager) }
+ */
+
+/**
+ * @swagger
  * /api/v1/users/tasks/{id}:
  *   patch:
  *     summary: Update task status (assignee only)

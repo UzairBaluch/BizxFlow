@@ -99,9 +99,10 @@ src/
 ### Tasks
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/tasks` | Admin/Manager |
-| GET | `/api/v1/users/tasks` | Auth |
-| PATCH | `/api/v1/users/tasks/:id` | Auth |
+| POST | `/api/v1/users/tasks` | Company or Admin/Manager |
+| GET | `/api/v1/users/tasks` | User — tasks assigned to me |
+| GET | `/api/v1/users/all-tasks` | Company or Admin/Manager — all tasks in company (paginated) |
+| PATCH | `/api/v1/users/tasks/:id` | Assignee (user) |
 
 ### Leave
 | Method | Endpoint | Access |

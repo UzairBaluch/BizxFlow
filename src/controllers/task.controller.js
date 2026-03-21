@@ -96,6 +96,50 @@ const getMyTask = asyncHandler(async (req, res) => {
     );
 });
 
+/** Company JWT or Admin/Manager — all tasks in tenant (same pagination shape as GET /tasks). */
+const getAllTasks = asyncHandler(async (req, res) => {
+  const companyId = req.company?._id ?? req.user?.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+  if (
+    !req.company &&
+    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+  ) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  const { page, limit, search, status } = req.query;
+  const pageNum = parseInt(page, 10) || 1;
+  const limitNum = parseInt(limit, 10) || 10;
+  const filter = { companyId };
+
+  if (search) {
+    filter.title = { $regex: search, $options: "i" };
+  }
+  const trimmed = status?.trim();
+  if (trimmed && ["Pending", "In Progress", "Done"].includes(trimmed)) {
+    filter.status = trimmed;
+  }
+
+  const taskFound = await Task.find(filter)
+    .populate("assignedTo", "fullName email role")
+    .populate("createdBy", "fullName email")
+    .populate("createdByCompany", "companyName")
+    .sort({ dueDate: 1, createdAt: -1 })
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum);
+  const totalTasks = await Task.countDocuments(filter);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { tasks: taskFound, totalTasks, page: pageNum, limit: limitNum },
+      "All company tasks found successfully"
+    )
+  );
+});
+
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -141,4 +185,4 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedTask, "Task is Updated Successfully"));
 });
 
-export { task, getMyTask, updateTaskStatus };
+export { task, getMyTask, getAllTasks, updateTaskStatus };

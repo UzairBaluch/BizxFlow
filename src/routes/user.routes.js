@@ -17,6 +17,7 @@ import {
   getAllAttendance,
 } from "../controllers/attendance.controller.js";
 import {
+  getAllTasks,
   getMyTask,
   task,
   updateTaskStatus,
@@ -72,6 +73,7 @@ router.route("/check-record").get(verifyJWT, checkRecord);
 router.route("/record-all").get(verifyJWT, getAllAttendance);
 router.route("/tasks").post(verifyJWT, task);
 router.route("/tasks").get(verifyJWT, getMyTask);
+router.route("/all-tasks").get(verifyJWT, getAllTasks);
 router.route("/tasks/:id").patch(verifyJWT, updateTaskStatus);
 router.route("/submit-leave").post(verifyJWT, submitLeave);
 router.route("/update-leave/:leaveId").patch(verifyJWT, updateLeaveStatus);

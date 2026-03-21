@@ -485,6 +485,61 @@
 
 /**
  * @swagger
+ * /api/v1/users/update-user-role/{userId}:
+ *   patch:
+ *     summary: Update a user role (directory management)
+ *     description: "Company JWT or Admin/Manager. Tenant-scoped. Cannot change own role; cannot demote last Admin."
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [role]
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [Admin, Manager, Employee]
+ *     responses:
+ *       200: { description: Updated user (no password fields) }
+ *       400: { description: Invalid id or role }
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden, own role, or last Admin guard }
+ *       404: { description: User not found in tenant }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/delete-user/{userId}:
+ *   delete:
+ *     summary: Remove a user from the company (hard delete)
+ *     description: "Company JWT or Admin/Manager. Cannot delete self; cannot delete last Admin."
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: "{ deleted: true } in data" }
+ *       400: { description: Invalid user id }
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden, self-delete, or last Admin }
+ *       404: { description: User not found in tenant }
+ */
+
+/**
+ * @swagger
  * /api/v1/users/company:
  *   patch:
  *     summary: Update company profile (company login only)

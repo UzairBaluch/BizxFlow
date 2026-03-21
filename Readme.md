@@ -122,6 +122,8 @@ src/
 |--------|----------|--------|
 | GET | `/api/v1/users/all-users` | Company or Admin/Manager (scoped by company) |
 | POST | `/api/v1/users/add-user` | Company or Admin/Manager (body: fullName, email, password, role; optional picture) |
+| PATCH | `/api/v1/users/update-user-role/:userId` | Company or Admin/Manager — JSON `{ "role": "Admin" \| "Manager" \| "Employee" }` |
+| DELETE | `/api/v1/users/delete-user/:userId` | Company or Admin/Manager — hard delete; guards for self and last Admin |
 | PATCH | `/api/v1/users/change-password` | Auth (company or user) |
 | PATCH | `/api/v1/users/update-profile` | User only |
 

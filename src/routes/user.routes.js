@@ -4,6 +4,8 @@ import {
   changePassword,
   getAllUsers,
   getMe,
+  updateUserRole,
+  deleteUser,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middelware.js";
 import { loginUser } from "../controllers/loginUser.controller.js";
@@ -82,6 +84,8 @@ router.route("/my-leaves").get(verifyJWT, getMyLeaves);
 router.route("/forgot-password").post(authLimiter, forgotPassword);
 router.route("/reset-password/:token").post(authLimiter, resetPassword);
 router.route("/all-users").get(verifyJWT, getAllUsers);
+router.route("/update-user-role/:userId").patch(verifyJWT, updateUserRole);
+router.route("/delete-user/:userId").delete(verifyJWT, deleteUser);
 router.route("/change-password").patch(verifyJWT, changePassword);
 router
   .route("/company")

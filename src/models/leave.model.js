@@ -13,6 +13,11 @@ const leaveSchema = new Schema(
       default: "Sick",
       required: true,
     },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected"],
@@ -32,6 +37,10 @@ const leaveSchema = new Schema(
     reviewedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
+    },
+    reviewedByCompany: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
     },
   },
   { timestamps: true }

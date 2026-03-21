@@ -7,11 +7,15 @@ import { sendMail } from "../utils/sendEmail.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
   const user = req.user;
-  const email = req.user.email;
-  if (!email) {
+  if (!user) {
     throw new ApiError(401, "Unauthorized request");
   }
-  if (!user) {
+  const email = user.email;
+  const company = user.companyId;
+  if (!company) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+  if (!email) {
     throw new ApiError(401, "Unauthorized request");
   }
   const { leaveType, startDate, endDate, reason } = req.body;
@@ -23,8 +27,9 @@ const submitLeave = asyncHandler(async (req, res) => {
     throw new ApiError(400, "startDate cannot be after endDate");
   }
   const createLeave = await Leave.create({
-    employee: req.user?._id,
+    employee: user._id,
     leaveType,
+    companyId: company,
     startDate,
     endDate,
     reason,
@@ -41,6 +46,17 @@ const submitLeave = asyncHandler(async (req, res) => {
 });
 
 const updateLeaveStatus = asyncHandler(async (req, res) => {
+  const companyId = req.company?._id ?? req.user?.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+  if (
+    !req.company &&
+    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+  ) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
   const { status } = req.body;
   const leaveId = req.params.leaveId;
 
@@ -53,12 +69,22 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Leave not found");
   }
 
+  if (!leave.companyId || leave.companyId.toString() !== companyId.toString()) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
   if (leave.status === "Approved" || leave.status === "Rejected") {
     throw new ApiError(400, "Leave already reviewed");
   }
 
   leave.status = status;
-  leave.reviewedBy = req.user._id;
+  if (req.company) {
+    leave.reviewedByCompany = req.company._id;
+    leave.reviewedBy = null;
+  } else {
+    leave.reviewedBy = req.user._id;
+    leave.reviewedByCompany = null;
+  }
   await leave.save();
 
   const emailInfo = await User.findById(leave.employee);
@@ -74,10 +100,20 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
 });
 
 const getAllLeaves = asyncHandler(async (req, res) => {
-  if (req.user.role !== "Admin" && req.user.role !== "Manager") {
+  const companyId = req.company?._id ?? req.user?.companyId;
+  if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  const leaves = await Leave.find().populate("employee", "fullName email");
+  if (
+    !req.company &&
+    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+  ) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+  const leaves = await Leave.find({ companyId }).populate(
+    "employee",
+    "fullName email"
+  );
 
   return res
     .status(200)
@@ -89,8 +125,13 @@ const getMyLeaves = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
   }
+  const companyId = user.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
   const leaveFound = await Leave.find({
-    employee: req.user._id,
+    companyId,
+    employee: user._id,
   });
   return res
     .status(200)

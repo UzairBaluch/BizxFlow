@@ -29,7 +29,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. Company can update itself (name, logo), change password, and list users in its company. Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Users and add-user are scoped by company; attendance, leave, tasks, announcements, and dashboard counts are scoped by `companyId` (see Roadmap).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. The **company** account can use the same org features as Admin/Manager (dashboard, users, tasks, leaves, announcements, **company-wide** attendance via `record-all`) **except employee self-service attendance** (`checkIn`, `checkOut`, `check-record` — those require an **employee** user). Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Scoped by `companyId` (see Roadmap).
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
 - **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
 - **Attendance Tracking** – Check-in, check-out, view records by date range
@@ -91,9 +91,9 @@ src/
 ### Attendance
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/checkIn` | Employee |
-| POST | `/api/v1/users/checkOut` | Employee |
-| GET | `/api/v1/users/check-record` | Auth |
+| POST | `/api/v1/users/checkIn` | Employee user only (not company JWT) |
+| POST | `/api/v1/users/checkOut` | Employee user only (not company JWT) |
+| GET | `/api/v1/users/check-record` | User only — own records (not company JWT) |
 | GET | `/api/v1/users/record-all` | Company or Admin/Manager |
 
 ### Tasks
@@ -127,7 +127,7 @@ src/
 ### Dashboard
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| GET | `/api/v1/users/dashboard` | Admin/Manager |
+| GET | `/api/v1/users/dashboard` | Company JWT or Admin/Manager user |
 
 ### Announcements
 | Method | Endpoint | Access |

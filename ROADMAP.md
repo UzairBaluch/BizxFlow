@@ -19,7 +19,7 @@
 - **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
-- **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company
+- **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company. **Company vs attendance:** company JWT can use org features (incl. `record-all`, dashboard) but **not** `checkIn` / `checkOut` / `check-record` (employee self-service only).
 - **Add user:** Company or Admin/Manager add users (fullName, email, password, role; optional picture)
 - **Multi-tenancy:** Attendance, leave, tasks, announcements, dashboard, all-users, and add-user scoped by `companyId` (see checklist below)
 
@@ -33,7 +33,7 @@ Data isolation: each company only sees its own records via `companyId` on models
 - [x] **Leave** – `companyId` on model; submit/review/list flows tenant-safe
 - [x] **Task** – `companyId` on create; assignee same company; my-tasks filtered by company
 - [x] **Announcements** – `companyId` on create; list filtered by company
-- [x] **Dashboard** – Counts scoped by manager’s `companyId` (Admin/Manager user JWT)
+- [x] **Dashboard** – Counts scoped by `companyId` (Company JWT or Admin/Manager user JWT)
 
 **Note:** Older DB rows without `companyId` may need a one-time migration before strict production use.
 

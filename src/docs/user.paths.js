@@ -111,7 +111,7 @@
  *     responses:
  *       200: { description: Checked in }
  *       401: { description: Unauthorized }
- *       403: { description: Not an Employee or missing company }
+ *       403: { description: Not an Employee, missing company, or company JWT (no check-in) }
  *       409: { description: Already checked in today }
  */
 
@@ -126,7 +126,7 @@
  *     responses:
  *       200: { description: Checked out }
  *       401: { description: Unauthorized }
- *       403: { description: Not an Employee or missing company }
+ *       403: { description: Not an Employee, missing company, or company JWT }
  *       404: { description: No check-in for today }
  *       409: { description: Already checked out }
  */
@@ -136,6 +136,7 @@
  * /api/v1/users/check-record:
  *   get:
  *     summary: My attendance in a date range
+ *     description: "User JWT only (employee history). Company JWT not allowed — use record-all."
  *     tags: [Attendance]
  *     security:
  *       - bearerAuth: []
@@ -151,7 +152,7 @@
  *     responses:
  *       200: { description: List of attendance documents }
  *       401: { description: Unauthorized }
- *       403: { description: Missing company context }
+ *       403: { description: Missing company, or company JWT }
  */
 
 /**
@@ -527,7 +528,7 @@
  * /api/v1/users/dashboard:
  *   get:
  *     summary: Dashboard KPIs
- *     description: Admin or Manager user JWT only (not company-only token). Counts scoped to user companyId.
+ *     description: "Company JWT or Admin/Manager user JWT. Same aggregates scoped to that companyId."
  *     tags: [Dashboard]
  *     security:
  *       - bearerAuth: []
@@ -535,5 +536,5 @@
  *       200:
  *         description: data includes totalEmployees, totalTasks, tasksByStatus, totalLeaves, leaveByStatus, todayAttendance
  *       401: { description: Unauthorized }
- *       403: { description: Not Admin/Manager }
+ *       403: { description: Forbidden (not company account and not Admin/Manager user) }
  */

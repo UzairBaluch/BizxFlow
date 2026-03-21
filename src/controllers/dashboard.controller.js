@@ -7,13 +7,15 @@ import { Leave } from "../models/leave.model.js";
 import { Attendance } from "../models/attendance.model.js";
 
 const getDashboard = asyncHandler(async (req, res) => {
-  const role = req.user.role;
-  if (role !== "Admin" && role !== "Manager") {
-    throw new ApiError(403, "Unauthorized request");
-  }
-  const companyId = req.user.companyId;
+  const companyId = req.company?._id ?? req.user?.companyId;
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
+  }
+  // Company JWT: full KPI access for that tenant. User JWT: Admin/Manager only.
+  if (!req.company) {
+    if (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager")) {
+      throw new ApiError(403, "Unauthorized request");
+    }
   }
   const today = new Date();
   const startOfDay = new Date(today.setHours(0, 0, 0, 0));

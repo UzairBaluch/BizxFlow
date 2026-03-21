@@ -5,7 +5,22 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { dateRange } from "../utils/CustomDateMaker.js";
 import { date } from "../utils/DateMaker.js";
 
+/**
+ * Company login can manage the org (dashboard, users, tasks, leaves, etc.) but must not use
+ * **employee self-service attendance** (check-in/out or personal history). They may still use
+ * GET /record-all to view company-wide attendance (same as Admin/Manager users).
+ */
+const assertNotCompanyEmployeeAttendance = (req) => {
+  if (req.company) {
+    throw new ApiError(
+      403,
+      "Company accounts cannot check in or view personal attendance. Use an employee user for check-in/out; use record-all for company attendance."
+    );
+  }
+};
+
 const checkInUser = asyncHandler(async (req, res) => {
+  assertNotCompanyEmployeeAttendance(req);
   const user = req.user?._id;
   const company = req.user?.companyId;
   if (!company) {
@@ -46,6 +61,7 @@ const checkInUser = asyncHandler(async (req, res) => {
 });
 
 const checkOutUser = asyncHandler(async (req, res) => {
+  assertNotCompanyEmployeeAttendance(req);
   const user = req.user?._id;
   const company = req.user?.companyId;
   if (!company) {
@@ -92,6 +108,7 @@ const checkOutUser = asyncHandler(async (req, res) => {
 });
 
 const checkRecord = asyncHandler(async (req, res) => {
+  assertNotCompanyEmployeeAttendance(req);
   const user = req.user?._id;
   const company = req.user?.companyId;
   if (!company) {

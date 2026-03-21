@@ -6,12 +6,14 @@ import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
 
 const task = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    throw new ApiError(401, "Unauthorized request");
+  const companyId = req.company?._id ?? req.user?.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
   }
-
-  if (req.user.role !== "Admin" && req.user.role !== "Manager") {
+  if (
+    !req.company &&
+    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+  ) {
     throw new ApiError(403, "Unauthorized request");
   }
 
@@ -24,16 +26,29 @@ const task = asyncHandler(async (req, res) => {
   if (!assignedCheck) {
     throw new ApiError(400, "assigned to not found");
   }
+  if (assignedCheck.companyId.toString() !== companyId.toString()) {
+    throw new ApiError(403, "Assignee must belong to your company");
+  }
   if (dueDate && isNaN(new Date(dueDate).getTime())) {
     throw new ApiError(400, "Invalid due date");
   }
-  const createTask = await Task.create({
+
+  const createPayload = {
     title,
     description,
     assignedTo,
+    companyId,
     dueDate,
-    createdBy: req.user?._id,
-  });
+  };
+  if (req.company) {
+    createPayload.createdByCompany = req.company._id;
+    createPayload.createdBy = null;
+  } else {
+    createPayload.createdBy = req.user._id;
+    createPayload.createdByCompany = null;
+  }
+
+  const createTask = await Task.create(createPayload);
 
   await sendMail(
     assignedCheck.email,
@@ -47,15 +62,18 @@ const task = asyncHandler(async (req, res) => {
 });
 
 const getMyTask = asyncHandler(async (req, res) => {
-  const user = req.user?._id;
-
+  const user = req.user;
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
+  }
+  const companyId = user.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
   }
   const { page, limit, search } = req.query;
   const pageNum = parseInt(page) || 1;
   const limitNum = parseInt(limit) || 10;
-  const filter = { assignedTo: user };
+  const filter = { assignedTo: user._id, companyId };
 
   if (search) {
     filter.title = { $regex: search, $options: "i" };
@@ -101,7 +119,14 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No Task Found");
   }
 
-  if (loadTask.assignedTo.toString() !== req.user._id.toString()) {
+  if (
+    !loadTask.companyId ||
+    loadTask.companyId.toString() !== user.companyId.toString()
+  ) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  if (loadTask.assignedTo.toString() !== user._id.toString()) {
     throw new ApiError(403, "Only Assignee can Update");
   }
 

@@ -11,6 +11,10 @@ const getDashboard = asyncHandler(async (req, res) => {
   if (role !== "Admin" && role !== "Manager") {
     throw new ApiError(403, "Unauthorized request");
   }
+  const companyId = req.user.companyId;
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
   const today = new Date();
   const startOfDay = new Date(today.setHours(0, 0, 0, 0));
   const endOfDay = new Date(today.setHours(23, 59, 59, 999));
@@ -23,12 +27,21 @@ const getDashboard = asyncHandler(async (req, res) => {
     leaveByStatus,
     todayAttendance,
   ] = await Promise.all([
-    User.countDocuments({ role: "Employee" }),
-    Task.countDocuments(),
-    Task.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
-    Leave.countDocuments(),
-    Leave.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
-    Attendance.countDocuments({ date: { $gte: startOfDay, $lte: endOfDay } }),
+    User.countDocuments({ role: "Employee", companyId }),
+    Task.countDocuments({ companyId }),
+    Task.aggregate([
+      { $match: { companyId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]),
+    Leave.countDocuments({ companyId }),
+    Leave.aggregate([
+      { $match: { companyId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]),
+    Attendance.countDocuments({
+      companyId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    }),
   ]);
 
   return res.status(200).json(

@@ -14,6 +14,11 @@ const taskSchema = new Schema(
       ref: "User",
       required: true,
     },
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     status: {
       type: String,
       enum: ["Pending", "In Progress", "Done"],
@@ -22,7 +27,10 @@ const taskSchema = new Schema(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+    },
+    createdByCompany: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
     },
     dueDate: {
       type: Date,

@@ -96,7 +96,6 @@ const getMyTask = asyncHandler(async (req, res) => {
     );
 });
 
-/** Company JWT or Admin/Manager — all tasks in tenant (same pagination shape as GET /tasks). */
 const getAllTasks = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
   if (!companyId) {

@@ -11,7 +11,6 @@ const getDashboard = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  // Company JWT: full KPI access for that tenant. User JWT: Admin/Manager only.
   if (!req.company) {
     if (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager")) {
       throw new ApiError(403, "Unauthorized request");

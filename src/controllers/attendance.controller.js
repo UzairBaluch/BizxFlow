@@ -5,11 +5,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { dateRange } from "../utils/CustomDateMaker.js";
 import { date } from "../utils/DateMaker.js";
 
-/**
- * Company login can manage the org (dashboard, users, tasks, leaves, etc.) but must not use
- * **employee self-service attendance** (check-in/out or personal history). They may still use
- * GET /record-all to view company-wide attendance (same as Admin/Manager users).
- */
 const assertNotCompanyEmployeeAttendance = (req) => {
   if (req.company) {
     throw new ApiError(

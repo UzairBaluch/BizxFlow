@@ -19,6 +19,7 @@
 - **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
+- **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated
 - **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company. **Company vs attendance:** company JWT can use org features (incl. `record-all`, dashboard) but **not** `checkIn` / `checkOut` / `check-record` (employee self-service only).
 - **Add user:** Company or Admin/Manager add users (fullName, email, password, role; optional picture)
 - **Multi-tenancy:** Attendance, leave, tasks, announcements, dashboard, all-users, and add-user scoped by `companyId` (see checklist below)

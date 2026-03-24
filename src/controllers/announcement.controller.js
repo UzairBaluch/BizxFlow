@@ -1,4 +1,6 @@
 import { Announcement } from "../models/announcement.model.js";
+import { Notification } from "../models/notification.model.js";
+import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -34,6 +36,35 @@ const announcements = asyncHandler(async (req, res) => {
   }
 
   const createAnnouncement = await Announcement.create(createPayload);
+
+  const recipientFilter = { companyId };
+  if (req.user?._id) {
+    recipientFilter._id = { $ne: req.user._id };
+  }
+  const recipients = await User.find(recipientFilter).select("_id").lean();
+
+  if (recipients.length > 0) {
+    const preview =
+      createAnnouncement.body.length > 240
+        ? `${createAnnouncement.body.slice(0, 240)}…`
+        : createAnnouncement.body;
+    try {
+      await Notification.insertMany(
+        recipients.map((u) => ({
+          companyId,
+          recipient: u._id,
+          type: "ANNOUNCEMENT_CREATED",
+          title: createAnnouncement.title,
+          body: preview,
+          metadata: {
+            announcementId: createAnnouncement._id.toString(),
+          },
+        }))
+      );
+    } catch (err) {
+      console.error("BizxFlow announcement notifications failed", err?.message);
+    }
+  }
 
   return res
     .status(201)

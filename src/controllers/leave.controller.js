@@ -4,8 +4,13 @@ import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
+import { createNotificationSafe } from "../utils/notification.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
+  if (req.company) {
+    throw new ApiError(403, "User account required");
+  }
+
   const user = req.user;
   if (!user) {
     throw new ApiError(401, "Unauthorized request");
@@ -39,6 +44,27 @@ const submitLeave = asyncHandler(async (req, res) => {
     "New Leave Request",
     `<p>Your <strong>${leaveType}</strong> leave request from <strong>${startDate}</strong> to <strong>${endDate}</strong> has been submitted and is pending approval.</p>`
   );
+
+  const managers = await User.find({
+    companyId: company,
+    role: { $in: ["Admin", "Manager"] },
+  }).select("_id");
+
+  const submitterId = user._id.toString();
+  for (const m of managers) {
+    if (m._id.toString() === submitterId) continue;
+    await createNotificationSafe({
+      companyId: company,
+      recipient: m._id,
+      type: "LEAVE_SUBMITTED",
+      title: "New leave request",
+      body: `${user.fullName || email} submitted ${leaveType} leave (${startDate} to ${endDate}).`,
+      metadata: {
+        leaveId: createLeave._id.toString(),
+        employeeId: user._id.toString(),
+      },
+    });
+  }
 
   return res
     .status(200)
@@ -93,6 +119,15 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
     "Leave Request Update",
     `<p> Your Leave request has been <strong> ${status} </strong>.</p>`
   );
+
+  await createNotificationSafe({
+    companyId: leave.companyId,
+    recipient: leave.employee,
+    type: status === "Approved" ? "LEAVE_APPROVED" : "LEAVE_REJECTED",
+    title: status === "Approved" ? "Leave approved" : "Leave rejected",
+    body: `Your ${leave.leaveType} leave request was ${status.toLowerCase()}.`,
+    metadata: { leaveId: leave._id.toString() },
+  });
 
   return res
     .status(200)

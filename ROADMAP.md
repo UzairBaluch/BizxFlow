@@ -17,7 +17,7 @@
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
 - **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
-- **Notifications (REST):** `Notification` model; `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` — **user JWT**, tenant-scoped (`companyId` + `recipient`). **Next:** create rows from domain events (tasks/leave/announcements), optional Socket.io fan-out, align with existing emails where needed
+- **Notifications:** `Notification` model; user JWT REST: `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` (tenant-scoped). **DB triggers:** `TASK_ASSIGNED` (task create), `LEAVE_SUBMITTED` (managers/admins), `LEAVE_APPROVED` / `LEAVE_REJECTED` (employee), `ANNOUNCEMENT_CREATED` (company users; poster excluded on user JWT). **Next:** optional Socket.io after writes; optional email dedup vs existing `sendMail`
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated
@@ -35,6 +35,7 @@ Data isolation: each company only sees its own records via `companyId` on models
 - [x] **Leave** – `companyId` on model; submit/review/list flows tenant-safe
 - [x] **Task** – `companyId` on create; assignee same company; my-tasks filtered by company
 - [x] **Announcements** – `companyId` on create; list filtered by company
+- [x] **Notifications** – `companyId` on model; inbox and triggers tenant-scoped (`recipient` + `companyId`)
 - [x] **Dashboard** – Counts scoped by `companyId` (Company JWT or Admin/Manager user JWT)
 
 **Note:** Older DB rows without `companyId` may need a one-time migration before strict production use.
@@ -62,7 +63,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 
 | Feature | Notes |
 |--------|--------|
-| **Notifications** | **REST + persistence done.** Remaining: auto-create on events, optional Socket.io, optional email dedup vs existing `sendMail` |
+| **Notifications** | **Shipped:** REST + in-app rows from tasks, leave, announcements. **Remaining:** optional Socket.io, optional email dedup |
 | **Meetings** | Scheduler, calendar, reminders — meetings API |
 | **Meeting notes** | AI summary → action items (or simple CRUD first) |
 | **Team chat** | Real-time channels/DMs — Socket.io rooms + message history |
@@ -75,7 +76,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | **Natural language tasks** | “Remind X to…” — NL API |
 | **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
 
-**Suggested order:** **Notifications** (tenant-scoped) → then by priority (e.g. Meetings, Chat, Analytics) — each with `companyId` + filters from day one.
+**Suggested order:** Notification DB triggers are shipped; next by priority (e.g. Meetings, Chat, Analytics) — each with `companyId` + filters from day one.
 
 ---
 

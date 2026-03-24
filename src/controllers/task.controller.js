@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
+import { createNotificationSafe } from "../utils/notification.js";
 
 const task = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -23,12 +24,15 @@ const task = asyncHandler(async (req, res) => {
   }
 
   const assignedCheck = await User.findById(assignedTo);
+
   if (!assignedCheck) {
     throw new ApiError(400, "assigned to not found");
   }
+
   if (assignedCheck.companyId.toString() !== companyId.toString()) {
     throw new ApiError(403, "Assignee must belong to your company");
   }
+
   if (dueDate && isNaN(new Date(dueDate).getTime())) {
     throw new ApiError(400, "Invalid due date");
   }
@@ -40,6 +44,7 @@ const task = asyncHandler(async (req, res) => {
     companyId,
     dueDate,
   };
+
   if (req.company) {
     createPayload.createdByCompany = req.company._id;
     createPayload.createdBy = null;
@@ -55,6 +60,15 @@ const task = asyncHandler(async (req, res) => {
     "New Task Assigned",
     `<p>You have been assigned a new task: <strong>${title}</strong>.</p>`
   );
+
+  await createNotificationSafe({
+    companyId,
+    recipient: assignedTo,
+    type: "TASK_ASSIGNED",
+    title: "New task assigned",
+    body: `You were assigned: ${title}`,
+    metadata: { taskId: createTask._id.toString() },
+  });
 
   return res
     .status(201)
@@ -130,13 +144,15 @@ const getAllTasks = asyncHandler(async (req, res) => {
     .limit(limitNum);
   const totalTasks = await Task.countDocuments(filter);
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      { tasks: taskFound, totalTasks, page: pageNum, limit: limitNum },
-      "All company tasks found successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { tasks: taskFound, totalTasks, page: pageNum, limit: limitNum },
+        "All company tasks found successfully"
+      )
+    );
 });
 
 const updateTaskStatus = asyncHandler(async (req, res) => {

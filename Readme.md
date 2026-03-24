@@ -147,14 +147,16 @@ src/
 | PATCH | `/api/v1/users/my-notifications/read-all` | User — marks all unread as read; `{ modifiedCount }` |
 | PATCH | `/api/v1/users/my-notifications/:notificationId/read` | User — mark one as read |
 
-Company JWT should not use these routes (no `req.user`); real-time delivery via Socket.io is planned on the roadmap.
+Rows are created automatically when: a task is assigned (`TASK_ASSIGNED`), leave is submitted (`LEAVE_SUBMITTED` to Admin/Manager, excluding self) or approved/rejected (`LEAVE_APPROVED` / `LEAVE_REJECTED` to the employee), and an announcement is published (`ANNOUNCEMENT_CREATED` to company users; the posting user is skipped when they use a user JWT).
+
+Company JWT should not use these routes (no `req.user`); push/real-time delivery via Socket.io is still on the roadmap.
 
 ---
 
 ## Roadmap
 
 - **Multi-tenancy** – Tasks, leave, attendance, announcements, dashboard, and notification rows are scoped by `companyId`.
-- **Next features** – Notification **triggers** + optional **Socket.io**, then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
+- **Next features** – Optional **Socket.io** (or similar) for live notification delivery; then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
 
 ---
 

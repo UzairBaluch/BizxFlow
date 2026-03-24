@@ -5,6 +5,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
 const getMyNotifications = asyncHandler(async (req, res) => {
+  if (req.company) {
+    throw new ApiError(403, "User account required for notifications");
+  }
   const user = req.user?._id;
   const companyId = req.user?.companyId;
   const { page, limit, read } = req.query;
@@ -45,6 +48,9 @@ const getMyNotifications = asyncHandler(async (req, res) => {
 });
 
 const markNotificationRead = asyncHandler(async (req, res) => {
+  if (req.company) {
+    throw new ApiError(403, "User account required for notifications");
+  }
   const user = req.user?._id;
   const companyId = req.user?.companyId;
   const notificationId = req.params.notificationId;
@@ -81,6 +87,9 @@ const markNotificationRead = asyncHandler(async (req, res) => {
 });
 
 const markAllNotificationsRead = asyncHandler(async (req, res) => {
+  if (req.company) {
+    throw new ApiError(403, "User account required for notifications");
+  }
   const user = req.user?._id;
   const companyId = req.user?.companyId;
 
@@ -109,6 +118,10 @@ const markAllNotificationsRead = asyncHandler(async (req, res) => {
 });
 
 const getUnreadCount = asyncHandler(async (req, res) => {
+  if (req.company) {
+    throw new ApiError(403, "User account required for notifications");
+  }
+
   const user = req.user?._id;
   const companyId = req.user?.companyId;
 

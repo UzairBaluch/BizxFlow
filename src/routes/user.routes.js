@@ -45,6 +45,12 @@ import {
   updateCompany,
 } from "../controllers/company.controller.js";
 import { addUser } from "../controllers/addUser.controller.js";
+import {
+  getMyNotifications,
+  getUnreadCount,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "../controllers/notification.controller.js";
 const router = Router();
 
 router.route("/register").post(
@@ -65,6 +71,7 @@ router.route("/add-user").post(
   ]),
   addUser
 );
+
 router.route("/login").post(authLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/me").get(verifyJWT, getMe);
@@ -87,6 +94,7 @@ router.route("/all-users").get(verifyJWT, getAllUsers);
 router.route("/update-user-role/:userId").patch(verifyJWT, updateUserRole);
 router.route("/delete-user/:userId").delete(verifyJWT, deleteUser);
 router.route("/change-password").patch(verifyJWT, changePassword);
+
 router
   .route("/company")
   .patch(verifyJWT, upload.fields([{ name: "logo" }]), updateCompany);
@@ -99,10 +107,21 @@ router.route("/update-profile").patch(
   ]),
   updateProfile
 );
+
 router.route("/dashboard").get(verifyJWT, getDashboard);
+
 router
   .route("/announcements")
   .post(verifyJWT, announcements)
   .get(verifyJWT, getAnnouncements);
+
+router.route("/my-notifications").get(verifyJWT, getMyNotifications);
+router.route("/unread-count").get(verifyJWT, getUnreadCount);
+router
+  .route("/my-notifications/read-all")
+  .patch(verifyJWT, markAllNotificationsRead);
+router
+  .route("/my-notifications/:notificationId/read")
+  .patch(verifyJWT, markNotificationRead);
 
 export default router;

@@ -79,8 +79,32 @@ const markNotificationRead = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, notifications, "Notifications found"));
 });
-const markAllNotificationsRead = asyncHandler(async (req, res) => {});
+
+const markAllNotificationsRead = asyncHandler(async (req, res) => {
+  const user = req.user?._id;
+  const companyId = req.user?.companyId;
+
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  if (!user) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  const markNotifications = await Notification.updateMany(
+    { recipient: req.user._id, companyId: companyId, read: false },
+    { read: true }
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { modifiedCount: markNotifications.modifiedCount })
+    );
+});
 const getUnreadCount = asyncHandler(async (req, res) => {});
+
 export {
   getMyNotifications,
   markNotificationRead,

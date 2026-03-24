@@ -139,12 +139,22 @@ src/
 | POST | `/api/v1/users/announcements` | Admin/Manager |
 | GET | `/api/v1/users/announcements` | Auth |
 
+### Notifications (in-app, user JWT)
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| GET | `/api/v1/users/my-notifications` | User — query: `page`, `limit`, optional `read` (`true` / `false`) |
+| GET | `/api/v1/users/unread-count` | User — `{ unreadCount }` |
+| PATCH | `/api/v1/users/my-notifications/read-all` | User — marks all unread as read; `{ modifiedCount }` |
+| PATCH | `/api/v1/users/my-notifications/:notificationId/read` | User — mark one as read |
+
+Company JWT should not use these routes (no `req.user`); real-time delivery via Socket.io is planned on the roadmap.
+
 ---
 
 ## Roadmap
 
-- **Multi-tenancy** – Tasks, leave, attendance, announcements, and dashboard are scoped by `companyId`. Next: new features (notifications, etc.).
-- **Next features** – Notifications (in-app + email), then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
+- **Multi-tenancy** – Tasks, leave, attendance, announcements, dashboard, and notification rows are scoped by `companyId`.
+- **Next features** – Notification **triggers** + optional **Socket.io**, then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
 
 ---
 

@@ -56,6 +56,10 @@ const options = {
       { name: "Leave", description: "Submit (user); approve/list (Company/Admin/Manager)" },
       { name: "Dashboard", description: "Admin/Manager user metrics for their company" },
       { name: "Announcements", description: "Company announcements (tenant-scoped)" },
+      {
+        name: "Notifications",
+        description: "In-app notifications (user JWT); tenant-scoped by companyId",
+      },
     ],
   },
   apis: [

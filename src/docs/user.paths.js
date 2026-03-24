@@ -624,3 +624,84 @@
  *       401: { description: Unauthorized }
  *       403: { description: Forbidden (not company account and not Admin/Manager user) }
  */
+
+/**
+ * @swagger
+ * /api/v1/users/my-notifications:
+ *   get:
+ *     summary: List my notifications (paginated)
+ *     description: "User JWT only. Filter by read=true or read=false. Scoped by companyId and recipient."
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *       - in: query
+ *         name: read
+ *         schema: { type: string, enum: ["true", "false"] }
+ *         description: Optional unread-only or read-only filter
+ *     responses:
+ *       200:
+ *         description: "{ notifications, totalNotifications, page, limit }"
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden (e.g. company JWT or missing companyId) }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/unread-count:
+ *   get:
+ *     summary: Unread notification count (badge)
+ *     description: "User JWT only."
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "{ unreadCount } in data"
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/my-notifications/read-all:
+ *   patch:
+ *     summary: Mark all my notifications as read
+ *     description: "User JWT only."
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "{ modifiedCount } in data"
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/my-notifications/{notificationId}/read:
+ *   patch:
+ *     summary: Mark one notification as read
+ *     description: "User JWT only. Must belong to caller as recipient and tenant."
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: notificationId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: Updated notification document }
+ *       400: { description: Invalid notification id }
+ *       401: { description: Unauthorized }
+ *       403: { description: Forbidden }
+ *       404: { description: Not found or not yours }
+ */

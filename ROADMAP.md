@@ -17,6 +17,7 @@
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
 - **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
+- **Notifications (REST):** `Notification` model; `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` — **user JWT**, tenant-scoped (`companyId` + `recipient`). **Next:** create rows from domain events (tasks/leave/announcements), optional Socket.io fan-out, align with existing emails where needed
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated
@@ -61,7 +62,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 
 | Feature | Notes |
 |--------|--------|
-| **Notifications** | In-app + email (task assigned, leave status, etc.) |
+| **Notifications** | **REST + persistence done.** Remaining: auto-create on events, optional Socket.io, optional email dedup vs existing `sendMail` |
 | **Meetings** | Scheduler, calendar, reminders — meetings API |
 | **Meeting notes** | AI summary → action items (or simple CRUD first) |
 | **Team chat** | Real-time channels/DMs — Socket.io rooms + message history |

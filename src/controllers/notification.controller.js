@@ -2,6 +2,7 @@ import { Notification } from "../models/notification.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 const getMyNotifications = asyncHandler(async (req, res) => {
   const user = req.user?._id;
@@ -43,7 +44,41 @@ const getMyNotifications = asyncHandler(async (req, res) => {
   );
 });
 
-const markNotificationRead = asyncHandler(async (req, res) => {});
+const markNotificationRead = asyncHandler(async (req, res) => {
+  const user = req.user?._id;
+  const companyId = req.user?.companyId;
+  const notificationId = req.params.notificationId;
+
+  if (!companyId) {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  if (!user) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  if (!mongoose.isValidObjectId(notificationId)) {
+    throw new ApiError(400, "Invalid notification id");
+  }
+
+  const notifications = await Notification.findOneAndUpdate(
+    {
+      _id: notificationId,
+      recipient: req.user._id,
+      companyId: req.user.companyId,
+    },
+    { read: true },
+    { new: true }
+  );
+
+  if (!notifications) {
+    throw new ApiError(404, "No Notifications found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notifications, "Notifications found"));
+});
 const markAllNotificationsRead = asyncHandler(async (req, res) => {});
 const getUnreadCount = asyncHandler(async (req, res) => {});
 export {

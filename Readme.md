@@ -44,6 +44,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 - **Announcements** – Admin/Manager create company-wide announcements; any authenticated user can list (newest first)
 - **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
 - **API Documentation** – Interactive Swagger UI at `/api-docs` with JWT (Bearer) auth
+- **In-app notifications** – REST inbox + Socket.io push (`notification` event) for **user** JWT clients; persistence and triggers on tasks, leave, announcements
 
 ---
 
@@ -60,6 +61,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 | Token Generation | Node.js crypto |
 | Security | helmet + express-rate-limit |
 | Logging | morgan |
+| Real-time | Socket.io (notification pushes) |
 
 ---
 
@@ -71,6 +73,7 @@ src/
 ├── middlewares/       # Auth and file upload middleware
 ├── models/            # Mongoose schemas
 ├── routes/            # Express routes
+├── socket/            # Socket.io (auth + notification emits)
 └── utils/             # Helper functions (ApiError, ApiResponse, sendEmail, etc.)
 ```
 
@@ -149,14 +152,14 @@ src/
 
 Rows are created automatically when: a task is assigned (`TASK_ASSIGNED`), leave is submitted (`LEAVE_SUBMITTED` to Admin/Manager, excluding self) or approved/rejected (`LEAVE_APPROVED` / `LEAVE_REJECTED` to the employee), and an announcement is published (`ANNOUNCEMENT_CREATED` to company users; the posting user is skipped when they use a user JWT).
 
-Company JWT should not use these routes (no `req.user`); push/real-time delivery via Socket.io is still on the roadmap.
+**Socket.io:** Same base URL as the API. **User** access token in `auth.token` on connect; server emits **`notification`** with the saved document. Company JWT cannot use notification REST or this socket. Frontend notes: [docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md). OpenAPI overview: `/api-docs` top description.
 
 ---
 
 ## Roadmap
 
 - **Multi-tenancy** – Tasks, leave, attendance, announcements, dashboard, and notification rows are scoped by `companyId`.
-- **Next features** – Optional **Socket.io** (or similar) for live notification delivery; then Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
+- **Next features** – Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
 
 ---
 
@@ -209,7 +212,7 @@ Server starts at `http://localhost:8000`
 
 **API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with `Bearer <accessToken>` from `POST /api/v1/users/login` (`data.accessToken`). Raw OpenAPI JSON: `/api-docs.json` (import into Postman, Insomnia, or codegen).
 
-**Frontend:** Use **Swagger** (`/api-docs`, `/api-docs.json`) for contracts; see **ROADMAP.md** for what is shipped vs planned.
+**Frontend:** Use **Swagger** (`/api-docs`, `/api-docs.json`) for REST contracts; use **[docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md)** for notification sockets; see **ROADMAP.md** for what is shipped vs planned.
 
 ---
 

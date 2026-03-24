@@ -630,7 +630,7 @@
  * /api/v1/users/my-notifications:
  *   get:
  *     summary: List my notifications (paginated)
- *     description: "User JWT only. Filter by read=true or read=false. Scoped by companyId and recipient."
+ *     description: "User JWT only. Filter by read=true or read=false. Scoped by companyId and recipient. When online, new items may arrive via Socket.io event `notification` (same document shape)."
  *     tags: [Notifications]
  *     security:
  *       - bearerAuth: []

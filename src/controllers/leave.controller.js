@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
 import { createNotificationSafe } from "../utils/notification.js";
+import { emitNotificationToUser } from "../socket/io.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
   if (req.company) {
@@ -53,7 +54,7 @@ const submitLeave = asyncHandler(async (req, res) => {
   const submitterId = user._id.toString();
   for (const m of managers) {
     if (m._id.toString() === submitterId) continue;
-    await createNotificationSafe({
+    const leaveSubNotif = await createNotificationSafe({
       companyId: company,
       recipient: m._id,
       type: "LEAVE_SUBMITTED",
@@ -64,6 +65,9 @@ const submitLeave = asyncHandler(async (req, res) => {
         employeeId: user._id.toString(),
       },
     });
+    if (leaveSubNotif) {
+      emitNotificationToUser(m._id, leaveSubNotif);
+    }
   }
 
   return res
@@ -120,7 +124,7 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
     `<p> Your Leave request has been <strong> ${status} </strong>.</p>`
   );
 
-  await createNotificationSafe({
+  const leaveDecisionNotif = await createNotificationSafe({
     companyId: leave.companyId,
     recipient: leave.employee,
     type: status === "Approved" ? "LEAVE_APPROVED" : "LEAVE_REJECTED",
@@ -128,6 +132,9 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
     body: `Your ${leave.leaveType} leave request was ${status.toLowerCase()}.`,
     metadata: { leaveId: leave._id.toString() },
   });
+  if (leaveDecisionNotif) {
+    emitNotificationToUser(leave.employee, leaveDecisionNotif);
+  }
 
   return res
     .status(200)

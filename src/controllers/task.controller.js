@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
 import { createNotificationSafe } from "../utils/notification.js";
+import { emitNotificationToUser } from "../socket/io.js";
 
 const task = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -61,7 +62,7 @@ const task = asyncHandler(async (req, res) => {
     `<p>You have been assigned a new task: <strong>${title}</strong>.</p>`
   );
 
-  await createNotificationSafe({
+  const taskNotif = await createNotificationSafe({
     companyId,
     recipient: assignedTo,
     type: "TASK_ASSIGNED",
@@ -69,6 +70,9 @@ const task = asyncHandler(async (req, res) => {
     body: `You were assigned: ${title}`,
     metadata: { taskId: createTask._id.toString() },
   });
+  if (taskNotif) {
+    emitNotificationToUser(assignedTo, taskNotif);
+  }
 
   return res
     .status(201)

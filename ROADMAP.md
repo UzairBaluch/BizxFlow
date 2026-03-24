@@ -17,7 +17,7 @@
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
 - **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
-- **Notifications:** `Notification` model; user JWT REST: `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` (tenant-scoped). **DB triggers:** `TASK_ASSIGNED` (task create), `LEAVE_SUBMITTED` (managers/admins), `LEAVE_APPROVED` / `LEAVE_REJECTED` (employee), `ANNOUNCEMENT_CREATED` (company users; poster excluded on user JWT). **Next:** optional Socket.io after writes; optional email dedup vs existing `sendMail`
+- **Notifications:** `Notification` model; user JWT REST: `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` (tenant-scoped). **DB triggers:** `TASK_ASSIGNED`, `LEAVE_SUBMITTED`, `LEAVE_APPROVED` / `LEAVE_REJECTED`, `ANNOUNCEMENT_CREATED` (see Readme). **Socket.io:** after each persisted notification, server emits `notification` to the recipient’s socket room (**user** JWT on connect only). **Optional later:** Redis adapter if multiple Node instances; email dedup vs `sendMail`
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated
@@ -63,7 +63,7 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 
 | Feature | Notes |
 |--------|--------|
-| **Notifications** | **Shipped:** REST + in-app rows from tasks, leave, announcements. **Remaining:** optional Socket.io, optional email dedup |
+| **Notifications** | **Shipped:** REST + DB triggers + Socket.io push. **Remaining:** optional Redis for multi-instance; optional email dedup |
 | **Meetings** | Scheduler, calendar, reminders — meetings API |
 | **Meeting notes** | AI summary → action items (or simple CRUD first) |
 | **Team chat** | Real-time channels/DMs — Socket.io rooms + message history |
@@ -76,13 +76,13 @@ Features the UI shows but have **no backend API yet**. Build these so frontend c
 | **Natural language tasks** | “Remind X to…” — NL API |
 | **Global search** | Cross-resource search (tasks, users, leaves, etc.) |
 
-**Suggested order:** Notification DB triggers are shipped; next by priority (e.g. Meetings, Chat, Analytics) — each with `companyId` + filters from day one.
+**Suggested order:** Notifications (REST + triggers + Socket.io) are shipped; next by priority (e.g. Meetings, Chat, Analytics) — each with `companyId` + filters from day one.
 
 ---
 
 ## 🟡 Core (from original roadmap)
 
-- Real-time notifications (Socket.io)
+- ~~Real-time notifications (Socket.io)~~ — shipped (in-app); scale-out via Redis adapter if needed
 - Scheduled email reports (node-cron)
 - Audit logs (who did what, when)
 

@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { emitNotificationToUser } from "../socket/io.js";
 
 const announcements = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -49,7 +50,7 @@ const announcements = asyncHandler(async (req, res) => {
         ? `${createAnnouncement.body.slice(0, 240)}…`
         : createAnnouncement.body;
     try {
-      await Notification.insertMany(
+      const createdNotifs = await Notification.insertMany(
         recipients.map((u) => ({
           companyId,
           recipient: u._id,
@@ -61,6 +62,9 @@ const announcements = asyncHandler(async (req, res) => {
           },
         }))
       );
+      for (const doc of createdNotifs) {
+        emitNotificationToUser(doc.recipient, doc);
+      }
     } catch (err) {
       console.error("BizxFlow announcement notifications failed", err?.message);
     }

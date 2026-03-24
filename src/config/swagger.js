@@ -17,6 +17,8 @@ const options = {
         "",
         "**Login:** `POST /api/v1/users/login` returns `data.type` of `\"company\"` or `\"user\"`. Company accounts use a company JWT; user accounts are employees/managers with `companyId`.",
         "",
+        "**Real-time notifications (Socket.io):** Same host and port as this API (e.g. `http://localhost:8000` locally). Connect with the official `socket.io-client` library. Pass the **user** access token — not a company token — as `auth: { token: \"<accessToken>\" }` on connect (optional fallback: query string `token`). Server emits event **`notification`** with a JSON object matching the `Notification` model (same fields you get from `GET /my-notifications`). Company JWT connections are rejected. Align browser `CORS_ORIGIN` with your frontend origin.",
+        "",
         "**Frontend testing:** Base URL defaults to `http://localhost:8000`. Set `CORS_ORIGIN` on the server for your frontend origin. Open **/api-docs** for interactive docs or **/api-docs.json** for the raw OpenAPI spec.",
       ].join("\n"),
     },
@@ -58,7 +60,8 @@ const options = {
       { name: "Announcements", description: "Company announcements (tenant-scoped)" },
       {
         name: "Notifications",
-        description: "In-app notifications (user JWT); tenant-scoped by companyId",
+        description:
+          "REST: list, unread count, mark read (user JWT only; tenant-scoped). New notifications are also pushed over Socket.io — see API description.",
       },
     ],
   },

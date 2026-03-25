@@ -115,7 +115,10 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
     type: status === "Approved" ? "LEAVE_APPROVED" : "LEAVE_REJECTED",
     title: status === "Approved" ? "Leave approved" : "Leave rejected",
     body: `Your ${leave.leaveType} leave request was ${status.toLowerCase()}.`,
-    metadata: { leaveId: leave._id.toString() },
+    metadata: {
+      leaveId: leave._id.toString(),
+      employeeId: leave.employee.toString(),
+    },
   });
   if (leaveDecisionNotif) {
     emitNotificationToUser(leave.employee, leaveDecisionNotif);

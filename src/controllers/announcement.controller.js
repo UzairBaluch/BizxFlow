@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { emitNotificationToUser } from "../socket/io.js";
+import { enrichNotificationMetadata } from "../utils/notificationMetadata.js";
 
 const announcements = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -54,9 +55,9 @@ const announcements = asyncHandler(async (req, res) => {
           type: "ANNOUNCEMENT_CREATED",
           title: createAnnouncement.title,
           body: preview,
-          metadata: {
+          metadata: enrichNotificationMetadata({
             announcementId: createAnnouncement._id.toString(),
-          },
+          }),
         }))
       );
       for (const doc of createdNotifs) {

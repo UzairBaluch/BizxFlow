@@ -73,7 +73,12 @@ const options = {
             title: { type: "string" },
             body: { type: "string" },
             read: { type: "boolean" },
-            metadata: { type: "object", additionalProperties: true },
+            metadata: {
+              type: "object",
+              additionalProperties: true,
+              description:
+                "UI deep links: canonical keys `leaveId`, `taskId`, `announcementId`, `attendanceId`, `employeeId` plus aliases (`leaveRequestId`, `requestId`, `leave_id`, `task_id`, `announcement_id`, `attendanceRecordId`, `recordId`, `userId`, `assigneeId`). `type` is a string (e.g. LEAVE_SUBMITTED); substring matching LEAVE/TASK/ANNOUNCEMENT/ATTENDANCE is fine for clients.",
+            },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },

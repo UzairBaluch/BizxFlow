@@ -1,8 +1,10 @@
 import { Notification } from "../models/notification.model.js";
+import { enrichNotificationMetadata } from "./notificationMetadata.js";
 
 const createNotificationSafe = async (payload) => {
   try {
-    return await Notification.create(payload);
+    const metadata = enrichNotificationMetadata(payload.metadata);
+    return await Notification.create({ ...payload, metadata });
   } catch (err) {
     console.error("BizxFlow notification create failed", err?.message);
     return null;

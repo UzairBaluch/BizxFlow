@@ -66,7 +66,10 @@ const task = asyncHandler(async (req, res) => {
     type: "TASK_ASSIGNED",
     title: "New task assigned",
     body: `You were assigned: ${title}`,
-    metadata: { taskId: createTask._id.toString() },
+    metadata: {
+      taskId: createTask._id.toString(),
+      assignedTo: assignedTo.toString?.() ?? String(assignedTo),
+    },
   });
   if (taskNotif) {
     emitNotificationToUser(assignedTo, taskNotif);

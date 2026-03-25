@@ -48,6 +48,36 @@ const options = {
             success: { type: "boolean", example: true },
           },
         },
+        Notification: {
+          type: "object",
+          description:
+            "Exactly one of `recipient` (User id) or `recipientCompany` (Company id) is set per document.",
+          properties: {
+            _id: { type: "string" },
+            companyId: { type: "string" },
+            recipient: { type: "string", nullable: true },
+            recipientCompany: { type: "string", nullable: true },
+            type: {
+              type: "string",
+              enum: [
+                "TASK_ASSIGNED",
+                "TASK_STATUS_UPDATED",
+                "LEAVE_SUBMITTED",
+                "LEAVE_APPROVED",
+                "LEAVE_REJECTED",
+                "ANNOUNCEMENT_CREATED",
+                "ATTENDANCE_CHECK_IN",
+                "ATTENDANCE_CHECK_OUT",
+              ],
+            },
+            title: { type: "string" },
+            body: { type: "string" },
+            read: { type: "boolean" },
+            metadata: { type: "object", additionalProperties: true },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+        },
       },
     },
     tags: [
@@ -61,7 +91,7 @@ const options = {
       {
         name: "Notifications",
         description:
-          "REST: user inbox (`/my-notifications`, user JWT) and company inbox (`/company-notifications`, company JWT); unread + mark read for each. New rows push over Socket.io — see API description.",
+          "User inbox: `/my-notifications` (+ `/unread-count` at path root). Company inbox: `/company-notifications/*`. Use the matching JWT. Document shape: **components.schemas.Notification**. Rows are created from tasks, leave, announcements, attendance — not via a public create endpoint.",
       },
     ],
   },

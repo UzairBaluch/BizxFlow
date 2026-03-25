@@ -2,7 +2,7 @@
  * @swagger
  * /api/v1/users/announcements:
  *   post:
- *     summary: Create announcement (Company or Admin/Manager; tenant-scoped)
+ *     summary: Create announcement (Company JWT or Manager user; tenant-scoped)
  *     tags: [Announcements]
  *     security:
  *       - bearerAuth: []
@@ -28,7 +28,7 @@
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Forbidden (not Company/Admin/Manager)
+ *         description: Forbidden (not Company JWT or Manager user)
  *   get:
  *     summary: List announcements for your company (newest first)
  *     tags: [Announcements]

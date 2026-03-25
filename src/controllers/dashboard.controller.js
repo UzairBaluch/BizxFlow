@@ -12,7 +12,7 @@ const getDashboard = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized request");
   }
   if (!req.company) {
-    if (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager")) {
+    if (!req.user || req.user.role !== "Manager") {
       throw new ApiError(403, "Unauthorized request");
     }
   }

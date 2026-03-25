@@ -48,7 +48,7 @@ const submitLeave = asyncHandler(async (req, res) => {
 
   const managers = await User.find({
     companyId: company,
-    role: { $in: ["Admin", "Manager"] },
+    role: "Manager",
   }).select("_id");
 
   const submitterId = user._id.toString();
@@ -80,10 +80,7 @@ const updateLeaveStatus = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
 
@@ -146,10 +143,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
   const leaves = await Leave.find({ companyId }).populate(

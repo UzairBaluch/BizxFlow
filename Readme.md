@@ -30,9 +30,9 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. The **company** account can use the same org features as Admin/Manager (dashboard, users, tasks, leaves, announcements, **company-wide** attendance via `record-all`) **except employee self-service attendance** (`checkIn`, `checkOut`, `check-record` — those require an **employee** user). Users are added by company or Admin/Manager via add-user. **Multi-tenancy:** Scoped by `companyId` (see Roadmap).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. The **company** account is the org owner (full access). **Manager** users share most org operations (dashboard, users, tasks, leaves, announcements, **company-wide** attendance via `record-all`); **employee** self-service (`checkIn`, `checkOut`, `check-record`) requires an **employee** user. New staff are added via add-user. **Multi-tenancy:** Scoped by `companyId` (see Roadmap).
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
-- **Role-Based Access Control** – Admin, Manager, Employee roles for **users**; company is a separate account type with protected routes
+- **Role-Based Access Control** – **User** accounts are **Manager** or **Employee** only. **Company** is a separate account type (signup), not a user role.
 - **Attendance Tracking** – Check-in, check-out, view records by date range
 - **Task Management** – Create and assign tasks, update status, email notifications
 - **Leave Management** – Apply for leave, approve/reject workflow, email notifications
@@ -41,7 +41,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 - **Security** – JWT auth, bcrypt password hashing, helmet HTTP headers, rate limiting on auth routes
 - **Request Logging** – morgan logs every request with method, route, status, and response time
 - **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
-- **Announcements** – Admin/Manager create company-wide announcements; any authenticated user can list (newest first)
+- **Announcements** – Company or Manager create company-wide announcements; any authenticated user can list (newest first)
 - **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
 - **API Documentation** – Interactive Swagger UI at `/api-docs` with JWT (Bearer) auth
 - **In-app notifications** – REST inbox + Socket.io push (`notification` event) for **user** JWT clients; persistence and triggers on tasks, leave, announcements
@@ -98,22 +98,22 @@ src/
 | POST | `/api/v1/users/checkIn` | Employee user only (not company JWT) |
 | POST | `/api/v1/users/checkOut` | Employee user only (not company JWT) |
 | GET | `/api/v1/users/check-record` | User only — own records (not company JWT) |
-| GET | `/api/v1/users/record-all` | Company or Admin/Manager |
+| GET | `/api/v1/users/record-all` | Company JWT or Manager user |
 
 ### Tasks
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/tasks` | Company or Admin/Manager |
+| POST | `/api/v1/users/tasks` | Company JWT or Manager user |
 | GET | `/api/v1/users/tasks` | User — tasks assigned to me |
-| GET | `/api/v1/users/all-tasks` | Company or Admin/Manager — all tasks in company (paginated) |
+| GET | `/api/v1/users/all-tasks` | Company JWT or Manager user — all tasks in company (paginated) |
 | PATCH | `/api/v1/users/tasks/:id` | Assignee (user) |
 
 ### Leave
 | Method | Endpoint | Access |
 |--------|----------|--------|
 | POST | `/api/v1/users/submit-leave` | Auth |
-| PATCH | `/api/v1/users/update-leave/:leaveId` | Admin/Manager |
-| GET | `/api/v1/users/all-leaves` | Admin/Manager |
+| PATCH | `/api/v1/users/update-leave/:leaveId` | Company JWT or Manager user |
+| GET | `/api/v1/users/all-leaves` | Company JWT or Manager user |
 | GET | `/api/v1/users/my-leaves` | Auth |
 
 ### Company (company account only)
@@ -124,22 +124,22 @@ src/
 ### Users
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| GET | `/api/v1/users/all-users` | Company or Admin/Manager (scoped by company) |
-| POST | `/api/v1/users/add-user` | Company or Admin/Manager (body: fullName, email, password, role; optional picture) |
-| PATCH | `/api/v1/users/update-user-role/:userId` | Company or Admin/Manager — JSON `{ "role": "Admin" \| "Manager" \| "Employee" }` |
-| DELETE | `/api/v1/users/delete-user/:userId` | Company or Admin/Manager — hard delete; guards for self and last Admin |
+| GET | `/api/v1/users/all-users` | Company JWT or Manager user (scoped by company) |
+| POST | `/api/v1/users/add-user` | Company JWT or Manager user (body: fullName, email, password, role `Manager` \| `Employee`; optional picture) |
+| PATCH | `/api/v1/users/update-user-role/:userId` | Company JWT or Manager user — JSON `{ "role": "Manager" \| "Employee" }` |
+| DELETE | `/api/v1/users/delete-user/:userId` | Company JWT or Manager user — hard delete; guards for self and last Manager |
 | PATCH | `/api/v1/users/change-password` | Auth (company or user) |
 | PATCH | `/api/v1/users/update-profile` | User only |
 
 ### Dashboard
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| GET | `/api/v1/users/dashboard` | Company JWT or Admin/Manager user |
+| GET | `/api/v1/users/dashboard` | Company JWT or Manager user |
 
 ### Announcements
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/announcements` | Admin/Manager |
+| POST | `/api/v1/users/announcements` | Company JWT or Manager user |
 | GET | `/api/v1/users/announcements` | Auth |
 
 ### Notifications (in-app, user JWT)
@@ -150,7 +150,7 @@ src/
 | PATCH | `/api/v1/users/my-notifications/read-all` | User — marks all unread as read; `{ modifiedCount }` |
 | PATCH | `/api/v1/users/my-notifications/:notificationId/read` | User — mark one as read |
 
-Rows are created automatically when: a task is assigned (`TASK_ASSIGNED`), leave is submitted (`LEAVE_SUBMITTED` to Admin/Manager, excluding self) or approved/rejected (`LEAVE_APPROVED` / `LEAVE_REJECTED` to the employee), and an announcement is published (`ANNOUNCEMENT_CREATED` to company users; the posting user is skipped when they use a user JWT).
+Rows are created automatically when: a task is assigned (`TASK_ASSIGNED`), leave is submitted (`LEAVE_SUBMITTED` to **Manager** users in the company, excluding self) or approved/rejected (`LEAVE_APPROVED` / `LEAVE_REJECTED` to the employee), and an announcement is published (`ANNOUNCEMENT_CREATED` to company users; the posting user is skipped when they use a user JWT).
 
 **Socket.io:** Same base URL as the API. **User** access token in `auth.token` on connect; server emits **`notification`** with the saved document. Company JWT cannot use notification REST or this socket. Frontend notes: [docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md). OpenAPI overview: `/api-docs` top description.
 

@@ -160,7 +160,7 @@
  * /api/v1/users/record-all:
  *   get:
  *     summary: All company attendance in range
- *     description: "Company JWT or Admin/Manager user. Filtered by tenant companyId."
+ *     description: "Company JWT or Manager user. Filtered by tenant companyId."
  *     tags: [Attendance]
  *     security:
  *       - bearerAuth: []
@@ -174,7 +174,7 @@
  *     responses:
  *       200: { description: Attendance rows with populated user }
  *       401: { description: Unauthorized }
- *       403: { description: Forbidden (not Company/Admin/Manager) }
+ *       403: { description: Forbidden (not Company or Manager user) }
  */
 
 /**
@@ -204,7 +204,7 @@
  *       403: { description: Missing company }
  *   post:
  *     summary: Create task
- *     description: Company JWT or Admin-Manager user. assignedTo must be a user id in the same company.
+ *     description: Company JWT or Manager user. assignedTo must be a user id in the same company.
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
@@ -224,7 +224,7 @@
  *       201: { description: Task created }
  *       400: { description: Validation / invalid assignee / bad date }
  *       401: { description: Unauthorized }
- *       403: { description: Not Company/Admin/Manager or assignee wrong company }
+ *       403: { description: Not Company or Manager user or assignee wrong company }
  */
 
 /**
@@ -232,7 +232,7 @@
  * /api/v1/users/all-tasks:
  *   get:
  *     summary: All company tasks (paginated)
- *     description: "Company JWT or Admin/Manager user. Same data shape as GET /tasks (tasks, totalTasks, page, limit). Optional status filter."
+ *     description: "Company JWT or Manager user. Same data shape as GET /tasks (tasks, totalTasks, page, limit). Optional status filter."
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
@@ -255,7 +255,7 @@
  *       200:
  *         description: "{ tasks, totalTasks, page, limit } (tasks may include populated assignedTo, createdBy, createdByCompany)"
  *       401: { description: Unauthorized }
- *       403: { description: Forbidden (not Company/Admin/Manager) }
+ *       403: { description: Forbidden (not Company or Manager user) }
  */
 
 /**
@@ -324,7 +324,7 @@
  * /api/v1/users/update-leave/{leaveId}:
  *   patch:
  *     summary: Approve or reject leave
- *     description: "Company JWT or Admin/Manager user. Same-tenant only."
+ *     description: "Company JWT or Manager user. Same-tenant only."
  *     tags: [Leave]
  *     security:
  *       - bearerAuth: []
@@ -370,7 +370,7 @@
  * /api/v1/users/all-leaves:
  *   get:
  *     summary: All leaves for the company
- *     description: "Company JWT or Admin/Manager user."
+ *     description: "Company JWT or Manager user."
  *     tags: [Leave]
  *     security:
  *       - bearerAuth: []
@@ -432,7 +432,7 @@
  * /api/v1/users/all-users:
  *   get:
  *     summary: List users in your company
- *     description: "Company JWT or Admin/Manager user. Supports pagination and search."
+ *     description: "Company JWT or Manager user. Supports pagination and search."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -459,7 +459,7 @@
  * /api/v1/users/add-user:
  *   post:
  *     summary: Add employee to your company
- *     description: "Company JWT or Admin/Manager user. multipart body."
+ *     description: "Company JWT or Manager user. multipart body."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -474,13 +474,13 @@
  *               fullName: { type: string }
  *               email: { type: string, format: email }
  *               password: { type: string }
- *               role: { type: string, enum: [Admin, Manager, Employee] }
+ *               role: { type: string, enum: [Manager, Employee] }
  *               picture: { type: string, format: binary }
  *     responses:
  *       201: { description: User added }
  *       400: { description: Validation or duplicate email }
  *       401: { description: Unauthorized }
- *       403: { description: Not Company/Admin/Manager }
+ *       403: { description: Not Company or Manager user }
  */
 
 /**
@@ -488,7 +488,7 @@
  * /api/v1/users/update-user-role/{userId}:
  *   patch:
  *     summary: Update a user role (directory management)
- *     description: "Company JWT or Admin/Manager. Tenant-scoped. Cannot change own role; cannot demote last Admin."
+ *     description: "Company JWT or Manager user. Tenant-scoped. Cannot change own role; cannot demote last Manager."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -507,12 +507,12 @@
  *             properties:
  *               role:
  *                 type: string
- *                 enum: [Admin, Manager, Employee]
+ *                 enum: [Manager, Employee]
  *     responses:
  *       200: { description: Updated user (no password fields) }
  *       400: { description: Invalid id or role }
  *       401: { description: Unauthorized }
- *       403: { description: Forbidden, own role, or last Admin guard }
+ *       403: { description: Forbidden, own role, or last Manager guard }
  *       404: { description: User not found in tenant }
  */
 
@@ -521,7 +521,7 @@
  * /api/v1/users/delete-user/{userId}:
  *   delete:
  *     summary: Remove a user from the company (hard delete)
- *     description: "Company JWT or Admin/Manager. Cannot delete self; cannot delete last Admin."
+ *     description: "Company JWT or Manager user. Cannot delete self; cannot delete last Manager."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -534,7 +534,7 @@
  *       200: { description: "{ deleted: true } in data" }
  *       400: { description: Invalid user id }
  *       401: { description: Unauthorized }
- *       403: { description: Forbidden, self-delete, or last Admin }
+ *       403: { description: Forbidden, self-delete, or last Manager }
  *       404: { description: User not found in tenant }
  */
 
@@ -614,7 +614,7 @@
  * /api/v1/users/dashboard:
  *   get:
  *     summary: Dashboard KPIs
- *     description: "Company JWT or Admin/Manager user JWT. Same aggregates scoped to that companyId."
+ *     description: "Company JWT or Manager user JWT. Same aggregates scoped to that companyId."
  *     tags: [Dashboard]
  *     security:
  *       - bearerAuth: []
@@ -622,7 +622,7 @@
  *       200:
  *         description: data includes totalEmployees, totalTasks, tasksByStatus, totalLeaves, leaveByStatus, todayAttendance
  *       401: { description: Unauthorized }
- *       403: { description: Forbidden (not company account and not Admin/Manager user) }
+ *       403: { description: Forbidden (not Company JWT and not Manager user) }
  */
 
 /**

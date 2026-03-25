@@ -7,22 +7,22 @@
 ## ✅ Done
 
 - **Auth:** Register, login, logout, access + refresh token (HTTP-only cookies), password reset
-- **Roles:** Admin, Manager, Employee with role checks on routes
+- **Roles:** **Company** account (signup) + **user** roles **Manager** / **Employee**; route guards use Company JWT or Manager user where elevated access is required
 - **Attendance:** Check-in/out, daily records, compound unique index
 - **Tasks:** Create, assign, update status, email on assignment
 - **Leave:** Apply, approve/reject, email on submit and status change
 - **File upload:** Profile picture via Cloudinary + Multer
 - **Security:** Helmet, rate limiting on auth, Morgan logging
-- **Users:** List users (company or Admin/Manager, tenant-scoped), update profile, change password
+- **Users:** List users (Company JWT or Manager user, tenant-scoped), update profile, change password
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
-- **Announcements:** Company or Admin/Manager create; list scoped by company (newest first)
+- **Announcements:** Company JWT or Manager user create; list scoped by company (newest first)
 - **Notifications:** `Notification` model; user JWT REST: `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` (tenant-scoped). **DB triggers:** `TASK_ASSIGNED`, `LEAVE_SUBMITTED`, `LEAVE_APPROVED` / `LEAVE_REJECTED`, `ANNOUNCEMENT_CREATED` (see Readme). **Socket.io:** after each persisted notification, server emits `notification` to the recipient’s socket room (**user** JWT on connect only). **Optional later:** Redis adapter if multiple Node instances; email dedup vs `sendMail`
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated
 - **Company-based auth:** Register company, unified login (company or user), getMe/logout/change-password, update company. **Company vs attendance:** company JWT can use org features (incl. `record-all`, dashboard) but **not** `checkIn` / `checkOut` / `check-record` (employee self-service only).
-- **Add user:** Company or Admin/Manager add users (fullName, email, password, role; optional picture)
+- **Add user:** Company JWT or Manager user add users (fullName, email, password, role Manager or Employee; optional picture)
 - **Multi-tenancy:** Attendance, leave, tasks, announcements, dashboard, all-users, and add-user scoped by `companyId` (see checklist below)
 
 ---
@@ -31,12 +31,12 @@
 
 Data isolation: each company only sees its own records via `companyId` on models and filtered queries.
 
-- [x] **Attendance** – `companyId` on model; set on check-in; `record-all` filtered by company (Company or Admin/Manager)
+- [x] **Attendance** – `companyId` on model; set on check-in; `record-all` filtered by company (Company JWT or Manager user)
 - [x] **Leave** – `companyId` on model; submit/review/list flows tenant-safe
 - [x] **Task** – `companyId` on create; assignee same company; my-tasks filtered by company
 - [x] **Announcements** – `companyId` on create; list filtered by company
 - [x] **Notifications** – `companyId` on model; inbox and triggers tenant-scoped (`recipient` + `companyId`)
-- [x] **Dashboard** – Counts scoped by `companyId` (Company JWT or Admin/Manager user JWT)
+- [x] **Dashboard** – Counts scoped by `companyId` (Company JWT or Manager user)
 
 **Note:** Older DB rows without `companyId` may need a one-time migration before strict production use.
 
@@ -49,7 +49,7 @@ Data isolation: each company only sees its own records via `companyId` on models
 1. **Model** – Add `companyId` (ref `Company`, required unless truly global).
 2. **Create** – Set `companyId` from `req.company?._id ?? req.user?.companyId` (same pattern as tasks/leaves/announcements).
 3. **Read / list / update / delete** – Filter or verify `companyId` **before** returning or mutating data (use `.toString()` for comparisons).
-4. **Auth** – Decide if the action is allowed for **company JWT**, **Admin/Manager**, **Employee**, or a combo; mirror existing controllers.
+4. **Auth** – Decide if the action is allowed for **company JWT**, **Manager** user, **Employee**, or a combo; mirror existing controllers.
 5. **Cross-tenant links** – Any `userId` / foreign key must belong to the same `companyId` (validate like task `assignedTo`).
 6. **Docs** – Update Swagger (`src/docs/*.paths.js`, `src/config/swagger.js`) when the API is stable.
 

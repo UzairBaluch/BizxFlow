@@ -12,10 +12,7 @@ const task = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
 
@@ -119,10 +116,7 @@ const getAllTasks = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
 

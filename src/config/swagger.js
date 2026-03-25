@@ -54,9 +54,9 @@ const options = {
       { name: "Auth", description: "Register, login, tokens, password reset" },
       { name: "Users", description: "Profiles, company, directory" },
       { name: "Attendance", description: "Check-in/out and records (tenant-scoped)" },
-      { name: "Tasks", description: "Create (Company/Admin/Manager); list/update as assignee" },
-      { name: "Leave", description: "Submit (user); approve/list (Company/Admin/Manager)" },
-      { name: "Dashboard", description: "Admin/Manager user metrics for their company" },
+      { name: "Tasks", description: "Create (Company JWT or Manager user); list/update as assignee" },
+      { name: "Leave", description: "Submit (user); approve/list (Company JWT or Manager user)" },
+      { name: "Dashboard", description: "Company JWT or Manager user metrics for their company" },
       { name: "Announcements", description: "Company announcements (tenant-scoped)" },
       {
         name: "Notifications",

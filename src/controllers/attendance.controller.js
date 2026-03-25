@@ -129,6 +129,7 @@ const checkRecord = asyncHandler(async (req, res) => {
       )
     );
 });
+
 const getAllAttendance = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
 
@@ -136,10 +137,7 @@ const getAllAttendance = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized request");
   }
 
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
 

@@ -11,10 +11,7 @@ const announcements = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
 
@@ -96,4 +93,5 @@ const getAnnouncements = asyncHandler(async (req, res) => {
       new ApiResponse(200, allAnnouncements, "Announcement found successfully")
     );
 });
+
 export { announcements, getAnnouncements };

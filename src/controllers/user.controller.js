@@ -7,7 +7,7 @@ import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 
-const DIRECTORY_ROLES = ["Admin", "Manager", "Employee"];
+const DIRECTORY_ROLES = ["Manager", "Employee"];
 
 const resolveDirectoryCompanyId = (req) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -16,12 +16,13 @@ const resolveDirectoryCompanyId = (req) => {
   }
   if (
     !req.company &&
-    (!req.user || (req.user.role !== "Admin" && req.user.role !== "Manager"))
+    (!req.user || req.user.role !== "Manager")
   ) {
     throw new ApiError(403, "Unauthorized request");
   }
   return companyId;
 };
+
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
   if ([fullName, email, password].some((field) => field?.trim() === "")) {
@@ -64,12 +65,13 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createdUser, "user registered successfully"));
 });
+
 const getAllUsers = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (req.user && req.user.role !== "Admin" && req.user.role !== "Manager") {
+  if (req.user && req.user.role !== "Manager") {
     throw new ApiError(403, "Unauthorized request");
   }
   const { page, limit, search } = req.query;
@@ -96,6 +98,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
       )
     );
 });
+
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   if (!currentPassword?.trim() || !newPassword?.trim()) {
@@ -126,6 +129,7 @@ const changePassword = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
+
 const updateProfile = asyncHandler(async (req, res) => {
   if (!req.user) {
     throw new ApiError(403, "User account required for profile update");
@@ -153,6 +157,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, uppdatePicture, "Profile updated successfully"));
 });
+
 const getMe = asyncHandler(async (req, res) => {
   if (req.company) {
     return res
@@ -171,6 +176,7 @@ const getMe = asyncHandler(async (req, res) => {
       new ApiResponse(200, { user: req.user, type: "user" }, "Current user")
     );
 });
+
 const updateUserRole = asyncHandler(async (req, res) => {
   const companyId = resolveDirectoryCompanyId(req);
   const { userId } = req.params;
@@ -182,7 +188,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
   if (!role || !DIRECTORY_ROLES.includes(role)) {
     throw new ApiError(
       400,
-      "role must be one of: Admin, Manager, Employee (exact capitalization)"
+      "role must be one of: Manager, Employee (exact capitalization)"
     );
   }
 
@@ -195,12 +201,15 @@ const updateUserRole = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You cannot change your own role");
   }
 
-  if (target.role === "Admin" && role !== "Admin") {
-    const adminCount = await User.countDocuments({ companyId, role: "Admin" });
-    if (adminCount <= 1) {
+  if (target.role === "Manager" && role !== "Manager") {
+    const managerCount = await User.countDocuments({
+      companyId,
+      role: "Manager",
+    });
+    if (managerCount <= 1) {
       throw new ApiError(
         403,
-        "Cannot change role of the last Admin in the company"
+        "Cannot change role of the last Manager in the company"
       );
     }
   }
@@ -215,6 +224,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, updated, "User role updated successfully"));
 });
+
 const deleteUser = asyncHandler(async (req, res) => {
   const companyId = resolveDirectoryCompanyId(req);
   const { userId } = req.params;
@@ -232,10 +242,16 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You cannot delete your own account");
   }
 
-  if (target.role === "Admin") {
-    const adminCount = await User.countDocuments({ companyId, role: "Admin" });
-    if (adminCount <= 1) {
-      throw new ApiError(403, "Cannot remove the last Admin in the company");
+  if (target.role === "Manager") {
+    const managerCount = await User.countDocuments({
+      companyId,
+      role: "Manager",
+    });
+    if (managerCount <= 1) {
+      throw new ApiError(
+        403,
+        "Cannot remove the last Manager in the company"
+      );
     }
   }
 

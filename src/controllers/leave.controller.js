@@ -6,6 +6,7 @@ import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
 import { createNotificationSafe } from "../utils/notification.js";
 import { emitNotificationToUser } from "../socket/io.js";
+import { notifyCompanyAndManagers } from "../utils/notifyOrg.js";
 
 const submitLeave = asyncHandler(async (req, res) => {
   if (req.company) {
@@ -46,29 +47,16 @@ const submitLeave = asyncHandler(async (req, res) => {
     `<p>Your <strong>${leaveType}</strong> leave request from <strong>${startDate}</strong> to <strong>${endDate}</strong> has been submitted and is pending approval.</p>`
   );
 
-  const managers = await User.find({
-    companyId: company,
-    role: "Manager",
-  }).select("_id");
-
-  const submitterId = user._id.toString();
-  for (const m of managers) {
-    if (m._id.toString() === submitterId) continue;
-    const leaveSubNotif = await createNotificationSafe({
-      companyId: company,
-      recipient: m._id,
-      type: "LEAVE_SUBMITTED",
-      title: "New leave request",
-      body: `${user.fullName || email} submitted ${leaveType} leave (${startDate} to ${endDate}).`,
-      metadata: {
-        leaveId: createLeave._id.toString(),
-        employeeId: user._id.toString(),
-      },
-    });
-    if (leaveSubNotif) {
-      emitNotificationToUser(m._id, leaveSubNotif);
-    }
-  }
+  await notifyCompanyAndManagers(company, {
+    type: "LEAVE_SUBMITTED",
+    title: "New leave request",
+    body: `${user.fullName || email} submitted ${leaveType} leave (${startDate} to ${endDate}).`,
+    metadata: {
+      leaveId: createLeave._id.toString(),
+      employeeId: user._id.toString(),
+    },
+    skipManagerUserIds: [user._id],
+  });
 
   return res
     .status(200)

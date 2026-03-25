@@ -144,9 +144,117 @@ const getUnreadCount = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { unreadCount: unreadCount }, "Unread count"));
 });
 
+const getCompanyNotifications = asyncHandler(async (req, res) => {
+  if (!req.company) {
+    throw new ApiError(403, "Company account required");
+  }
+  const companyId = req.company._id;
+  const { page, limit, read } = req.query;
+
+  const pageNum = parseInt(page, 10) || 1;
+  const limitNum = parseInt(limit, 10) || 10;
+  const filter = {
+    companyId,
+    recipientCompany: companyId,
+  };
+
+  if (read === "true") filter.read = true;
+  if (read === "false") filter.read = false;
+
+  const allNotifications = await Notification.find(filter)
+    .sort({ createdAt: -1 })
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum);
+
+  const totalNotifications = await Notification.countDocuments(filter);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        notifications: allNotifications,
+        totalNotifications,
+        page: pageNum,
+        limit: limitNum,
+      },
+      "Company notifications found"
+    )
+  );
+});
+
+const getCompanyUnreadCount = asyncHandler(async (req, res) => {
+  if (!req.company) {
+    throw new ApiError(403, "Company account required");
+  }
+  const companyId = req.company._id;
+  const unreadCount = await Notification.countDocuments({
+    companyId,
+    recipientCompany: companyId,
+    read: false,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { unreadCount }, "Unread count"));
+});
+
+const markCompanyNotificationRead = asyncHandler(async (req, res) => {
+  if (!req.company) {
+    throw new ApiError(403, "Company account required");
+  }
+  const companyId = req.company._id;
+  const notificationId = req.params.notificationId;
+
+  if (!mongoose.isValidObjectId(notificationId)) {
+    throw new ApiError(400, "Invalid notification id");
+  }
+
+  const notifications = await Notification.findOneAndUpdate(
+    {
+      _id: notificationId,
+      recipientCompany: companyId,
+      companyId,
+    },
+    { read: true },
+    { new: true }
+  );
+
+  if (!notifications) {
+    throw new ApiError(404, "No Notifications found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notifications, "Notifications found"));
+});
+
+const markAllCompanyNotificationsRead = asyncHandler(async (req, res) => {
+  if (!req.company) {
+    throw new ApiError(403, "Company account required");
+  }
+  const companyId = req.company._id;
+
+  const markNotifications = await Notification.updateMany(
+    { recipientCompany: companyId, companyId, read: false },
+    { read: true }
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { modifiedCount: markNotifications.modifiedCount },
+      "All company notifications marked as read"
+    )
+  );
+});
+
 export {
   getMyNotifications,
   markNotificationRead,
   markAllNotificationsRead,
   getUnreadCount,
+  getCompanyNotifications,
+  getCompanyUnreadCount,
+  markCompanyNotificationRead,
+  markAllCompanyNotificationsRead,
 };

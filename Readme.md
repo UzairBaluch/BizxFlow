@@ -142,17 +142,28 @@ src/
 | POST | `/api/v1/users/announcements` | Company JWT or Manager user |
 | GET | `/api/v1/users/announcements` | Auth |
 
-### Notifications (in-app, user JWT)
+### Notifications (in-app)
+**User JWT**
+
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| GET | `/api/v1/users/my-notifications` | User — query: `page`, `limit`, optional `read` (`true` / `false`) |
+| GET | `/api/v1/users/my-notifications` | User — `page`, `limit`, optional `read` |
 | GET | `/api/v1/users/unread-count` | User — `{ unreadCount }` |
-| PATCH | `/api/v1/users/my-notifications/read-all` | User — marks all unread as read; `{ modifiedCount }` |
-| PATCH | `/api/v1/users/my-notifications/:notificationId/read` | User — mark one as read |
+| PATCH | `/api/v1/users/my-notifications/read-all` | User |
+| PATCH | `/api/v1/users/my-notifications/:notificationId/read` | User |
 
-Rows are created automatically when: a task is assigned (`TASK_ASSIGNED`), leave is submitted (`LEAVE_SUBMITTED` to **Manager** users in the company, excluding self) or approved/rejected (`LEAVE_APPROVED` / `LEAVE_REJECTED` to the employee), and an announcement is published (`ANNOUNCEMENT_CREATED` to company users; the posting user is skipped when they use a user JWT).
+**Company JWT** (org owner inbox; rows use `recipientCompany`)
 
-**Socket.io:** Same base URL as the API. **User** access token in `auth.token` on connect; server emits **`notification`** with the saved document. Company JWT cannot use notification REST or this socket. Frontend notes: [docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md). OpenAPI overview: `/api-docs` top description.
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| GET | `/api/v1/users/company-notifications` | Company — same query shape as above |
+| GET | `/api/v1/users/company-notifications/unread-count` | Company |
+| PATCH | `/api/v1/users/company-notifications/read-all` | Company |
+| PATCH | `/api/v1/users/company-notifications/:notificationId/read` | Company |
+
+Rows are created for: **task assigned** (assignee + company inbox + Manager users, same org-wide copy; assigning Manager skipped from duplicate manager row); **task status updated** (company + Managers; updater skipped if Manager); **leave submitted** (company + Managers via one helper; submitter skipped if Manager); **leave approved/rejected** (employee); **announcement** (all users except poster on user JWT); **check-in / check-out** (company + Managers).
+
+**Socket.io:** Same base URL; `auth.token` = user **or** company access token; event **`notification`**. See `/api-docs` API description.
 
 ---
 

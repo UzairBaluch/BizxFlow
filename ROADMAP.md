@@ -17,7 +17,7 @@
 - **Dashboard:** Totals, tasks/leaves by status, today’s attendance (aggregations)
 - **Search & pagination:** Tasks (title), Users (fullName)
 - **Announcements:** Company JWT or Manager user create; list scoped by company (newest first)
-- **Notifications:** `Notification` model; user JWT REST: `GET /my-notifications`, `GET /unread-count`, `PATCH /my-notifications/read-all`, `PATCH /my-notifications/:notificationId/read` (tenant-scoped). **DB triggers:** `TASK_ASSIGNED`, `LEAVE_SUBMITTED`, `LEAVE_APPROVED` / `LEAVE_REJECTED`, `ANNOUNCEMENT_CREATED` (see Readme). **Socket.io:** after each persisted notification, server emits `notification` to the recipient’s socket room (**user** JWT on connect only). **Optional later:** Redis adapter if multiple Node instances; email dedup vs `sendMail`
+- **Notifications:** `Notification` model (user row: `recipient`; company inbox row: `recipientCompany`). User REST: `GET /my-notifications`, etc. Company REST: `GET /company-notifications`, `/company-notifications/unread-count`, mark-read routes. **Triggers:** `TASK_ASSIGNED`, `TASK_STATUS_UPDATED`, `LEAVE_SUBMITTED`, `LEAVE_APPROVED` / `LEAVE_REJECTED`, `ANNOUNCEMENT_CREATED`, `ATTENDANCE_CHECK_IN` / `ATTENDANCE_CHECK_OUT` (see Readme for recipients). **Socket.io:** emits `notification` to `user:<id>` or `company:<id>` by token type. **Optional:** Redis adapter; email dedup
 - **API docs:** Swagger at `/api-docs`
 - **Deploy:** Live on Railway
 - **Frontend integration:** [BizxFlow-Frontend](https://github.com/UzairBaluch/BizxFlow-Frontend) exercised against this API; core flows validated

@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { dateRange } from "../utils/CustomDateMaker.js";
 import { date } from "../utils/DateMaker.js";
+import { notifyCompanyAndManagers } from "../utils/notifyOrg.js";
 
 const assertNotCompanyEmployeeAttendance = (req) => {
   if (req.company) {
@@ -46,6 +47,16 @@ const checkInUser = asyncHandler(async (req, res) => {
     companyId: company,
     checkIn: new Date(),
     date: startDay,
+  });
+
+  await notifyCompanyAndManagers(company, {
+    type: "ATTENDANCE_CHECK_IN",
+    title: "Employee checked in",
+    body: `${req.user.fullName} checked in.`,
+    metadata: {
+      userId: user.toString(),
+      attendanceId: userRecord._id.toString(),
+    },
   });
 
   return res
@@ -94,6 +105,16 @@ const checkOutUser = asyncHandler(async (req, res) => {
   if (!updatedRecord) {
     throw new ApiError(500, "something went wrong");
   }
+
+  await notifyCompanyAndManagers(company, {
+    type: "ATTENDANCE_CHECK_OUT",
+    title: "Employee checked out",
+    body: `${req.user.fullName} checked out.`,
+    metadata: {
+      userId: user.toString(),
+      attendanceId: updatedRecord._id.toString(),
+    },
+  });
 
   return res
     .status(200)

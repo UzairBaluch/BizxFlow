@@ -50,6 +50,10 @@ import {
   getUnreadCount,
   markAllNotificationsRead,
   markNotificationRead,
+  getCompanyNotifications,
+  getCompanyUnreadCount,
+  markAllCompanyNotificationsRead,
+  markCompanyNotificationRead,
 } from "../controllers/notification.controller.js";
 const router = Router();
 
@@ -114,6 +118,19 @@ router
   .route("/announcements")
   .post(verifyJWT, announcements)
   .get(verifyJWT, getAnnouncements);
+
+router
+  .route("/company-notifications/unread-count")
+  .get(verifyJWT, getCompanyUnreadCount);
+router
+  .route("/company-notifications/read-all")
+  .patch(verifyJWT, markAllCompanyNotificationsRead);
+router
+  .route("/company-notifications/:notificationId/read")
+  .patch(verifyJWT, markCompanyNotificationRead);
+router
+  .route("/company-notifications")
+  .get(verifyJWT, getCompanyNotifications);
 
 router.route("/my-notifications").get(verifyJWT, getMyNotifications);
 router.route("/unread-count").get(verifyJWT, getUnreadCount);

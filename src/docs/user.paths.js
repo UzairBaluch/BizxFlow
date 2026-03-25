@@ -705,3 +705,78 @@
  *       403: { description: Forbidden }
  *       404: { description: Not found or not yours }
  */
+
+/**
+ * @swagger
+ * /api/v1/users/company-notifications:
+ *   get:
+ *     summary: List company account notifications (paginated)
+ *     description: "Company JWT only. Rows where recipientCompany matches this company. Socket.io accepts company access token and joins room company:<id>."
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *       - in: query
+ *         name: read
+ *         schema: { type: string, enum: ["true", "false"] }
+ *     responses:
+ *       200:
+ *         description: "{ notifications, totalNotifications, page, limit }"
+ *       403: { description: Not company JWT }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/company-notifications/unread-count:
+ *   get:
+ *     summary: Unread count for company inbox
+ *     description: Company JWT only.
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "{ unreadCount } in data"
+ *       403: { description: Not company JWT }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/company-notifications/read-all:
+ *   patch:
+ *     summary: Mark all company inbox notifications read
+ *     description: Company JWT only.
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "{ modifiedCount } in data"
+ *       403: { description: Not company JWT }
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/company-notifications/{notificationId}/read:
+ *   patch:
+ *     summary: Mark one company notification read
+ *     description: Company JWT only. Must be recipientCompany for this tenant.
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: notificationId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: Updated notification }
+ *       403: { description: Forbidden }
+ *       404: { description: Not found }
+ */

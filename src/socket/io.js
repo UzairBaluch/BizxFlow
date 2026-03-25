@@ -1,8 +1,16 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { Company } from "../models/company.model.js";
 
 let io = null;
+
+function toPayload(notificationDoc) {
+  if (!notificationDoc) return null;
+  return typeof notificationDoc.toObject === "function"
+    ? notificationDoc.toObject()
+    : { ...notificationDoc };
+}
 
 export function initSocketIO(httpServer) {
   const corsOrigin = process.env.CORS_ORIGIN || "*";
@@ -29,7 +37,12 @@ export function initSocketIO(httpServer) {
       const decoded = jwt.verify(token.trim(), process.env.ACCESS_TOKEN_SECRET);
 
       if (decoded?.type === "company") {
-        return next(new Error("Unauthorized: user token required"));
+        const company = await Company.findById(decoded._id).select("-password");
+        if (!company) {
+          return next(new Error("Unauthorized: company not found"));
+        }
+        socket.join(`company:${company._id.toString()}`);
+        return next();
       }
 
       if (decoded?.type !== "user") {
@@ -43,8 +56,7 @@ export function initSocketIO(httpServer) {
         return next(new Error("Unauthorized: user not found"));
       }
 
-      const userId = user._id.toString();
-      socket.join(`user:${userId}`);
+      socket.join(`user:${user._id.toString()}`);
       next();
     } catch (err) {
       next(new Error(err?.message || "Unauthorized"));
@@ -67,11 +79,18 @@ export function emitNotificationToUser(recipientUserId, notificationDoc) {
     recipientUserId != null && typeof recipientUserId.toString === "function"
       ? recipientUserId.toString()
       : String(recipientUserId);
-  const payload =
-    typeof notificationDoc.toObject === "function"
-      ? notificationDoc.toObject()
-      : { ...notificationDoc };
+  const payload = toPayload(notificationDoc);
   io.to(`user:${id}`).emit("notification", payload);
+}
+
+export function emitNotificationToCompany(companyId, notificationDoc) {
+  if (!io || !notificationDoc) return;
+  const id =
+    companyId != null && typeof companyId.toString === "function"
+      ? companyId.toString()
+      : String(companyId);
+  const payload = toPayload(notificationDoc);
+  io.to(`company:${id}`).emit("notification", payload);
 }
 
 export function getIO() {

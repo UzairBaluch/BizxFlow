@@ -6,6 +6,7 @@ import { User } from "../models/user.model.js";
 import { sendMail } from "../utils/sendEmail.js";
 import { createNotificationSafe } from "../utils/notification.js";
 import { emitNotificationToUser } from "../socket/io.js";
+import { notifyCompanyAndManagers } from "../utils/notifyOrg.js";
 
 const task = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -70,6 +71,23 @@ const task = asyncHandler(async (req, res) => {
   if (taskNotif) {
     emitNotificationToUser(assignedTo, taskNotif);
   }
+
+  const assignerLabel = req.company
+    ? req.company.companyName || "Company"
+    : req.user?.fullName || req.user?.email || "Manager";
+  const assigneeName =
+    assignedCheck.fullName || assignedCheck.email || "Assignee";
+
+  await notifyCompanyAndManagers(companyId, {
+    type: "TASK_ASSIGNED",
+    title: "Task assigned",
+    body: `${assignerLabel} assigned "${title}" to ${assigneeName}.`,
+    metadata: {
+      taskId: createTask._id.toString(),
+      assignedTo: assignedTo.toString?.() ?? String(assignedTo),
+    },
+    skipManagerUserIds: req.user ? [req.user._id] : [],
+  });
 
   return res
     .status(201)
@@ -192,6 +210,18 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     { status: status.trim() },
     { new: true }
   );
+
+  await notifyCompanyAndManagers(user.companyId, {
+    type: "TASK_STATUS_UPDATED",
+    title: "Task status updated",
+    body: `${user.fullName} updated "${loadTask.title}" to ${status.trim()}.`,
+    metadata: {
+      taskId: loadTask._id.toString(),
+      status: status.trim(),
+      updatedBy: user._id.toString(),
+    },
+    skipManagerUserIds: [user._id],
+  });
 
   return res
     .status(200)

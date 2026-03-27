@@ -35,8 +35,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Refresh Token is expired or used");
       }
 
-    ({ accessToken, refreshToken }) =  await generateAccessAndRefreshToken(user._id, decodedToken.type);
-
+      const userTokens = await generateAccessAndRefreshToken(
+        user._id,
+        decodedToken.type
+      );
+      accessToken = userTokens.accessToken;
+      refreshToken = userTokens.refreshToken;
     } else if (decodedToken.type === "company") {
 
       const company = await Company.findById(decodedToken?._id);
@@ -49,8 +53,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Refresh Token is expired or used");
       }
 
-     ({accessToken, refreshToken }) = await generateAccessAndRefreshToken(company._id, decodedToken.type);
-
+      const companyTokens = await generateAccessAndRefreshToken(
+        company._id,
+        decodedToken.type
+      );
+      accessToken = companyTokens.accessToken;
+      refreshToken = companyTokens.refreshToken;
     } else { 
       throw new ApiError(401, "Invalid refresh token");
     }

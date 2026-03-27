@@ -9,19 +9,28 @@ const options = { httpOnly: true, secure: true };
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
   if ([email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "email and password are required");
   }
 
   const existedCompany = await Company.findOne({ email });
+
   if (existedCompany) {
     const isPasswordValid = await existedCompany.isPasswordCorrect(password);
     if (!isPasswordValid) {
       throw new ApiError(401, "password is incorrect");
     }
-    const accessToken = await existedCompany.generateAccessToken();
-    const refreshToken = await existedCompany.generateRefreshToken();
-    const company = await Company.findById(existedCompany._id).select("-password");
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      existedCompany._id,
+      "company"
+    );
+
+    const company = await Company.findById(existedCompany._id).select(
+      "-password -refreshToken"
+    );
+
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -41,15 +50,20 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const existedUser = await User.findOne({ email });
+
   if (!existedUser) {
     throw new ApiError(400, "No user found with this email");
   }
+
   const isPasswordValid = await existedUser.isPasswordCorrect(password);
+
   if (!isPasswordValid) {
     throw new ApiError(401, "password is incorrect");
   }
+
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    existedUser._id
+    existedUser._id,
+    "user"
   );
 
   const loggedUser = await User.findById(existedUser._id).select(

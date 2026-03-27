@@ -97,6 +97,7 @@ userSchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
+      type: "user",
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

@@ -23,6 +23,9 @@ const companySchema = new Schema(
       type: String,
       default: "",
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -55,6 +58,7 @@ companySchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
+      type: "company",
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

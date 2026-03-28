@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
+import { ORIGIN } from "../constants.js";
 
 let io = null;
 
@@ -13,7 +14,7 @@ function toPayload(notificationDoc) {
 }
 
 export function initSocketIO(httpServer) {
-  const corsOrigin = process.env.CORS_ORIGIN || "*";
+  const corsOrigin = process.env.CORS_ORIGIN || ORIGIN;
 
   io = new Server(httpServer, {
     cors: {

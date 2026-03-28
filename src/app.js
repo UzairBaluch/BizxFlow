@@ -6,6 +6,7 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/user.routes.js";
 import { swaggerSpec } from "./config/swagger.js";
+import { ORIGIN } from "../src/constants.js";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.get("/favicon.ico", (_, res) => res.status(204).end());
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: process.env.CORS_ORIGIN || ORIGIN,
     credentials: true,
   })
 );

@@ -8,11 +8,15 @@ import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 const registerCompany = asyncHandler(async (req, res) => {
   const { email, password, companyName } = req.body;
 
-  if (!email.trim() || !password.trim() || !companyName.trim()) {
+  const emailValue = email?.trim();
+  const passwordValue = password?.trim();
+  const companyNameValue = companyName?.trim();
+
+  if (!emailValue || !passwordValue || !companyNameValue) {
     throw new ApiError(400, "all fields are required");
   }
 
-  const existedCompany = await Company.findOne({ email });
+  const existedCompany = await Company.findOne({ email: emailValue });
   if (existedCompany) {
     throw new ApiError(400, "Company with email already exists");
   }
@@ -27,10 +31,10 @@ const registerCompany = asyncHandler(async (req, res) => {
   }
 
   const company = await Company.create({
-    companyName,
+    companyName: companyNameValue,
     ...(logoUrl && { logo: logoUrl }),
-    email,
-    password,
+    email: emailValue,
+    password: passwordValue,
   });
 
   const createdCompany = await Company.findById(company._id).select(
@@ -64,7 +68,10 @@ const updateCompany = asyncHandler(async (req, res) => {
   }
   const updated = await Company.findByIdAndUpdate(
     req.company._id,
-    { ...(companyName?.trim() && { companyName }), ...(logoUrl && { logo: logoUrl }) },
+    {
+      ...(companyName?.trim() && { companyName }),
+      ...(logoUrl && { logo: logoUrl }),
+    },
     { new: true }
   ).select("-password");
   return res

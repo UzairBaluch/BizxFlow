@@ -3,7 +3,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 
-const options = { httpOnly: true, secure: true };
+const options = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
 
 const logoutUser = asyncHandler(async (req, res) => {
   if (req.user) {

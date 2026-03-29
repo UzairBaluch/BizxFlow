@@ -5,7 +5,11 @@ import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 import { generateAccessAndRefreshToken } from "../utils/generateToken.js";
 
-const options = { httpOnly: true, secure: true };
+const options = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;

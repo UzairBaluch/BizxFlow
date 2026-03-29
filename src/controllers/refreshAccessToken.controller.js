@@ -24,7 +24,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 
     if (decodedToken.type === "user") {
-
       const user = await User.findById(decodedToken?._id);
 
       if (!user) {
@@ -42,7 +41,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       accessToken = userTokens.accessToken;
       refreshToken = userTokens.refreshToken;
     } else if (decodedToken.type === "company") {
-
       const company = await Company.findById(decodedToken?._id);
 
       if (!company) {
@@ -59,13 +57,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       );
       accessToken = companyTokens.accessToken;
       refreshToken = companyTokens.refreshToken;
-    } else { 
+    } else {
       throw new ApiError(401, "Invalid refresh token");
     }
-
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
 
     return res

@@ -26,7 +26,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await sendMail(
     findUser.email,
     "Password Reset Request",
-    `<p>Click the link to reset your password: <a href="http://localhost:8000/api/v1/users/reset-password/${token}">Reset Password</a></p>`
+    `<p>Click the link to reset your password: <a href="${process.env.PASSWORD_RESET_URL_BASE}/${token}">Reset Password</a></p>`
   );
   return res.status(200).json(new ApiResponse(200, {}, "Reset Token Created"));
 });

@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-
 import connectDb from "./db/index.js";
 import { app } from "./app.js";
 import { initSocketIO } from "./socket/io.js";
@@ -18,9 +17,7 @@ const server = createServer(app);
 const PORT = process.env.PORT || 4000;
 initSocketIO(server);
 
+await connectDb();
 server.listen(PORT, "0.0.0.0", () => {
   console.log("Server running on port", PORT);
-  connectDb().catch((error) => {
-    console.error("MONGODB connection failed:", error);
-  });
 });

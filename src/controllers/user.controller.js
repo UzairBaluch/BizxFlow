@@ -14,10 +14,7 @@ const resolveDirectoryCompanyId = (req) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  if (
-    !req.company &&
-    (!req.user || req.user.role !== "Manager")
-  ) {
+  if (!req.company && (!req.user || req.user.role !== "Manager")) {
     throw new ApiError(403, "Unauthorized request");
   }
   return companyId;
@@ -101,12 +98,15 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
+
   if (!currentPassword?.trim() || !newPassword?.trim()) {
     throw new ApiError(400, "Current and new password are required");
   }
+
   if (newPassword.length < 6) {
     throw new ApiError(400, "New password must be more than 6 characters");
   }
+
   if (req.company) {
     const company = await Company.findById(req.company._id);
     if (!company) throw new ApiError(404, "Company not found");
@@ -118,13 +118,18 @@ const changePassword = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {}, "Company password changed successfully"));
   }
+
   const user = await User.findById(req.user?._id);
+
   if (!user) throw new ApiError(404, "User not found");
+
   const isPasswordValid = await user.isPasswordCorrect(currentPassword);
+
   if (!isPasswordValid)
     throw new ApiError(400, "Current password is incorrect");
   user.password = newPassword;
   await user.save();
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"));
@@ -134,7 +139,9 @@ const updateProfile = asyncHandler(async (req, res) => {
   if (!req.user) {
     throw new ApiError(403, "User account required for profile update");
   }
+
   const { fullName } = req.body;
+
   const pictureLocalPath = req.files?.picture?.[0]?.path;
   let pictureUrl;
 
@@ -144,7 +151,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     if (!pictureRef) {
       throw new ApiError(500, "Failed to upload picture");
     }
-    await deleteFromCloudinary(req.user.picture);
+    await deleteFromCloudinary(req.user.picturePublicId || req.user.picture);
     pictureUrl = pictureRef.url;
   }
 
@@ -248,10 +255,7 @@ const deleteUser = asyncHandler(async (req, res) => {
       role: "Manager",
     });
     if (managerCount <= 1) {
-      throw new ApiError(
-        403,
-        "Cannot remove the last Manager in the company"
-      );
+      throw new ApiError(403, "Cannot remove the last Manager in the company");
     }
   }
 

@@ -25,11 +25,7 @@ export function initSocketIO(httpServer) {
 
   io.use(async (socket, next) => {
     try {
-      const token =
-        socket.handshake.auth?.token ||
-        (typeof socket.handshake.query?.token === "string"
-          ? socket.handshake.query.token
-          : undefined);
+      const token = socket.handshake.auth?.token;
 
       if (!token?.trim()) {
         return next(new Error("Unauthorized: missing token"));

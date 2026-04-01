@@ -25,10 +25,6 @@ const addUser = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized request");
   }
 
-  if ([fullName, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "all fields are required");
-  }
-
   const existedUser = await User.findOne({
     $or: [{ email }],
   });

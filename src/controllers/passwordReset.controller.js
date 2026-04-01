@@ -15,48 +15,62 @@ const forgotPassword = asyncHandler(async (req, res) => {
   if (!findUser) {
     throw new ApiError(404, "No User Exists");
   }
-  const token = crypto.randomBytes(32).toString("hex");
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
 
   await ResetToken.deleteOne({ userId: findUser._id });
-  const resetToken = await ResetToken.create({
+
+  await ResetToken.create({
     userId: findUser?._id,
-    token,
+    token: tokenHash,
   });
 
   await sendMail(
     findUser.email,
     "Password Reset Request",
-    `<p>Click the link to reset your password: <a href="${process.env.PASSWORD_RESET_URL_BASE}/${token}">Reset Password</a></p>`
+    `<p>Click the link to reset your password: <a href="${process.env.PASSWORD_RESET_URL_BASE}/${rawToken}">Reset Password</a></p>`
   );
   return res.status(200).json(new ApiResponse(200, {}, "Reset Token Created"));
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
   const token = req.params.token;
+  
   if (!token) {
     throw new ApiError(400, "Token is required");
   }
+
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
   const { newPassword } = req.body;
+
   if (!newPassword) {
     throw new ApiError(400, "New password is required");
   }
-  const resetToken = await ResetToken.findOne({ token });
+
+  const resetToken = await ResetToken.findOne({ token: tokenHash });
+
   if (!resetToken) {
     throw new ApiError(400, "Invalid Reset Token ");
   }
+
   const user = await User.findById(resetToken.userId);
 
   if (!user) {
     throw new ApiError(404, "Invalid user");
   }
+
   if (newPassword.length < 6) {
     throw new ApiError(400, "Password is too short, minimum 6 characters");
   }
+
   user.password = newPassword;
   await user.save();
-  await ResetToken.deleteOne({ token });
+  await ResetToken.deleteOne({ token: tokenHash });
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password reset successfully"));
 });
+
 export { forgotPassword, resetPassword };

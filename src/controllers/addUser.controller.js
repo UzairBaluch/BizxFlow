@@ -7,6 +7,12 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 const addUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
 
+  const required = [fullName, email, password];
+
+  if (!required.every((v) => typeof v === "string" && v.trim())) {
+    throw new ApiError(400, "all fields are required");
+  }
+
   const pictureLocalPath = req.files?.picture?.[0]?.path;
 
   const companyId = req.company?._id ?? req.user?.companyId;

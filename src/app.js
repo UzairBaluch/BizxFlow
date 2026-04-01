@@ -27,6 +27,8 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.get("/api-docs.json", (_, res) => res.json(swaggerSpec));
+// Trailing slash required: HTML uses relative ./swagger-ui.css; /api-docs (no slash) resolves assets to /swagger-ui.css (404).
+app.get("/api-docs", (_, res) => res.redirect(302, "/api-docs/"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1/users", userRouter);

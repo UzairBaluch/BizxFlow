@@ -1,8 +1,8 @@
 # BizxFlow
 
-A production-ready REST API for managing employees, attendance, tasks, and leaves — built with Node.js, Express, and MongoDB.
+A REST API for workforce management: **company signup**, **employees** (Manager / Employee), **tasks**, **leave**, **attendance**, **dashboard**, **announcements**, and **in-app notifications** (REST + Socket.io). Built with Node.js, Express, and MongoDB.
 
-Designed for businesses that need role-based workforce management with real-time notifications and secure authentication.
+**Version 1** of this backend is **feature-complete** for that scope. Suitable as a portfolio / full-stack backend paired with the [frontend repo](#frontend-full-stack).
 
 ---
 
@@ -30,7 +30,7 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 
 ## Features
 
-- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. The **company** account is the org owner (full access). **Manager** users share most org operations (dashboard, users, tasks, leaves, announcements, **company-wide** attendance via `record-all`); **employee** self-service (`checkIn`, `checkOut`, `check-record`) requires an **employee** user. New staff are added via add-user. **Multi-tenancy:** Scoped by `companyId` (see Roadmap).
+- **Company-based auth** – Sign up creates a **company** (email, password, company name, optional logo). One **login** for company or user; response includes `type: "company"` or `"user"`. The **company** account is the org owner (full access). **Manager** users share most org operations (dashboard, users, tasks, leaves, announcements, **company-wide** attendance via `record-all`); **Employee** self-service (`checkIn`, `checkOut`, `check-record`). New staff are added via **add-user**. Tenant data is scoped by **`companyId`** on create, read, update, and delete.
 - **Authentication** – Register (company), login (company or user), logout, refresh tokens, password reset via email
 - **Role-Based Access Control** – **User** accounts are **Manager** or **Employee** only. **Company** is a separate account type (signup), not a user role.
 - **Attendance Tracking** – Check-in, check-out, view records by date range
@@ -42,9 +42,9 @@ This repo is the **backend API**; the frontend consumes it for auth, dashboard, 
 - **Request Logging** – morgan logs every request with method, route, status, and response time
 - **Dashboard Analytics** – Real-time stats using MongoDB aggregation pipeline with parallel queries
 - **Announcements** – Company or Manager create company-wide announcements; any authenticated user can list (newest first)
-- **Search & Pagination** – Filter tasks by title, users by name, with page/limit controls
+- **Search & pagination** – Tasks and users lists support `page` and `limit` plus optional search; **`limit` is capped at 100** (default 10)
 - **API Documentation** – Interactive Swagger UI at `/api-docs` with JWT (Bearer) auth
-- **In-app notifications** – REST inbox + Socket.io push (`notification` event) for **user** JWT clients; persistence and triggers on tasks, leave, announcements
+- **In-app notifications** – REST + Socket.io (`notification` event): **user** JWT (`/my-notifications`, …) and **company** JWT (`/company-notifications`, …). Triggered by tasks, leave workflow, announcements, attendance check-in/out (see endpoint section below)
 
 ---
 
@@ -139,10 +139,13 @@ src/
 ### Announcements
 | Method | Endpoint | Access |
 |--------|----------|--------|
-| POST | `/api/v1/users/announcements` | Company JWT or Manager user |
-| GET | `/api/v1/users/announcements` | Auth |
+| POST | `/api/v1/users/announcements` | Company JWT or Manager user (**201 Created**) |
+| GET | `/api/v1/users/announcements` | Auth — full list for company, newest first (not paginated) |
 
 ### Notifications (in-app)
+
+Paginated routes (`my-notifications`, `company-notifications`) use `page` and `limit` with the same **max `limit` of 100** as tasks and users.
+
 **User JWT**
 
 | Method | Endpoint | Access |
@@ -167,10 +170,13 @@ Rows are created for: **task assigned** (assignee + company inbox + Manager user
 
 ---
 
-## Roadmap
+## Scope
 
-- **Multi-tenancy** – Tasks, leave, attendance, announcements, dashboard, and notification rows are scoped by `companyId`.
-- **Next features** – Meetings, Team chat, Analytics, and others. See [ROADMAP.md](ROADMAP.md) for the full list.
+**Shipped in V1** — Auth (register, login, refresh, password reset), users and roles, tasks, leave, attendance, dashboard, announcements, in-app notifications (REST + Socket.io), file uploads, Swagger, deployed API.
+
+**Multi-tenancy** — New tenant-scoped resources should include `companyId`, set it on create from the authenticated company or user, filter or verify it on reads/updates/deletes, and validate related user ids belong to the same company (follow patterns in existing controllers).
+
+**Not built here** — Examples: meetings, team chat, billing, advanced analytics (optional extensions for a separate project or fork).
 
 ---
 
@@ -211,7 +217,10 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 EMAIL_USER=
 EMAIL_PASS=
+PASSWORD_RESET_URL_BASE=https://your-frontend-host/path-to-reset-page
 ```
+
+`PASSWORD_RESET_URL_BASE` — no trailing slash; reset emails link to `{PASSWORD_RESET_URL_BASE}/{token}`.
 
 ### Run
 
@@ -223,7 +232,7 @@ Server starts at `http://localhost:8000`
 
 **API docs:** [Live](https://bizxflow-production.up.railway.app/api-docs) · [Local](http://localhost:8000/api-docs) — use **Authorize** with `Bearer <accessToken>` from `POST /api/v1/users/login` (`data.accessToken`). Raw OpenAPI JSON: `/api-docs.json` (import into Postman, Insomnia, or codegen).
 
-**Frontend:** Use **Swagger** (`/api-docs`, `/api-docs.json`) for REST contracts; use **[docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md)** for notification sockets; see **ROADMAP.md** for what is shipped vs planned.
+**Frontend:** Use **Swagger** (`/api-docs`, `/api-docs.json`) for REST contracts. If you have **[docs/FRONTEND-SOCKET.md](docs/FRONTEND-SOCKET.md)** locally, it describes Socket.io for notifications.
 
 ---
 

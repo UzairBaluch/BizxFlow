@@ -192,7 +192,8 @@
  *         schema: { type: integer, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+ *         description: Page size; server caps values above 100
  *       - in: query
  *         name: search
  *         schema: { type: string }
@@ -242,7 +243,8 @@
  *         schema: { type: integer, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+ *         description: Page size; server caps values above 100
  *       - in: query
  *         name: search
  *         schema: { type: string }
@@ -442,7 +444,8 @@
  *         schema: { type: integer, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+ *         description: Page size; server caps values above 100
  *       - in: query
  *         name: search
  *         schema: { type: string }
@@ -640,7 +643,8 @@
  *         schema: { type: integer, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+ *         description: Page size; server caps values above 100
  *       - in: query
  *         name: read
  *         schema: { type: string, enum: ["true", "false"] }
@@ -721,7 +725,8 @@
  *         schema: { type: integer, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+ *         description: Page size; server caps values above 100
  *       - in: query
  *         name: read
  *         schema: { type: string, enum: ["true", "false"] }

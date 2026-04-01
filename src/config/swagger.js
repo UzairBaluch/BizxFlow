@@ -11,7 +11,9 @@ const options = {
       title: "BizxFlow API",
       version: "1.0.0",
       description: [
-        "Workforce management REST API (multi-tenant by `companyId`).",
+        "Workforce management REST API (multi-tenant by `companyId`). **V1 complete:** auth, users, tasks, leave, attendance, dashboard, announcements, notifications (REST + Socket.io).",
+        "",
+        "**Pagination:** Query params `page` (default 1) and `limit` (default 10). `limit` is capped at **100**.",
         "",
         "**Auth:** Send `Authorization: Bearer <accessToken>` (or cookies if your client uses them). Use **Authorize** in Swagger UI and paste the token only.",
         "",
@@ -25,8 +27,8 @@ const options = {
     servers: [
       { url: "http://localhost:8000", description: "Local" },
       {
-        url: "https://YOUR_API_HOST",
-        description: "Production (replace with your deployed API URL)",
+        url: "https://bizxflow-production.up.railway.app",
+        description: "Production (Railway)",
       },
     ],
     components: {

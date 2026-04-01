@@ -176,8 +176,6 @@ Rows are created for: **task assigned** (assignee + company inbox + Manager user
 
 **Multi-tenancy** — New tenant-scoped resources should include `companyId`, set it on create from the authenticated company or user, filter or verify it on reads/updates/deletes, and validate related user ids belong to the same company (follow patterns in existing controllers).
 
-**Not built here** — Examples: meetings, team chat, billing, advanced analytics (optional extensions for a separate project or fork).
-
 ---
 
 ## Getting Started

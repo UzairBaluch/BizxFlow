@@ -7,6 +7,7 @@ import { sendMail } from "../utils/sendEmail.js";
 import { createNotificationSafe } from "../utils/notification.js";
 import { emitNotificationToUser } from "../socket/io.js";
 import { notifyCompanyAndManagers } from "../utils/notifyOrg.js";
+import { parsePagination } from "../utils/parsePagination.js";
 
 const task = asyncHandler(async (req, res) => {
   const companyId = req.company?._id ?? req.user?.companyId;
@@ -106,9 +107,8 @@ const getMyTask = asyncHandler(async (req, res) => {
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
   }
-  const { page, limit, search } = req.query;
-  const pageNum = parseInt(page) || 1;
-  const limitNum = parseInt(limit) || 10;
+  const { search } = req.query;
+  const { page: pageNum, limit: limitNum, skip } = parsePagination(req.query);
   const filter = { assignedTo: user._id, companyId };
 
   if (search) {
@@ -117,7 +117,7 @@ const getMyTask = asyncHandler(async (req, res) => {
 
   const taskFound = await Task.find(filter)
     .sort({ dueDate: 1, createdAt: -1 })
-    .skip((pageNum - 1) * limitNum)
+    .skip(skip)
     .limit(limitNum);
   const totalTasks = await Task.countDocuments(filter);
 
@@ -141,9 +141,8 @@ const getAllTasks = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized request");
   }
 
-  const { page, limit, search, status } = req.query;
-  const pageNum = parseInt(page, 10) || 1;
-  const limitNum = parseInt(limit, 10) || 10;
+  const { search, status } = req.query;
+  const { page: pageNum, limit: limitNum, skip } = parsePagination(req.query);
   const filter = { companyId };
 
   if (search) {
@@ -159,7 +158,7 @@ const getAllTasks = asyncHandler(async (req, res) => {
     .populate("createdBy", "fullName email")
     .populate("createdByCompany", "companyName")
     .sort({ dueDate: 1, createdAt: -1 })
-    .skip((pageNum - 1) * limitNum)
+    .skip(skip)
     .limit(limitNum);
   const totalTasks = await Task.countDocuments(filter);
 

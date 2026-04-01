@@ -2,6 +2,7 @@ import { Notification } from "../models/notification.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErr.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { parsePagination } from "../utils/parsePagination.js";
 import mongoose from "mongoose";
 
 const getMyNotifications = asyncHandler(async (req, res) => {
@@ -10,7 +11,7 @@ const getMyNotifications = asyncHandler(async (req, res) => {
   }
   const user = req.user?._id;
   const companyId = req.user?.companyId;
-  const { page, limit, read } = req.query;
+  const { read } = req.query;
 
   if (!companyId) {
     throw new ApiError(403, "Unauthorized request");
@@ -19,8 +20,7 @@ const getMyNotifications = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized request");
   }
 
-  const pageNum = parseInt(page, 10) || 1;
-  const limitNum = parseInt(limit, 10) || 10;
+  const { page: pageNum, limit: limitNum, skip } = parsePagination(req.query);
   const filter = { companyId, recipient: req.user._id };
 
   if (read === "true") filter.read = true;
@@ -28,7 +28,7 @@ const getMyNotifications = asyncHandler(async (req, res) => {
 
   const allNotifications = await Notification.find(filter)
     .sort({ createdAt: -1 })
-    .skip((pageNum - 1) * limitNum)
+    .skip(skip)
     .limit(limitNum);
 
   const totalNotifications = await Notification.countDocuments(filter);
@@ -149,10 +149,9 @@ const getCompanyNotifications = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Company account required");
   }
   const companyId = req.company._id;
-  const { page, limit, read } = req.query;
+  const { read } = req.query;
 
-  const pageNum = parseInt(page, 10) || 1;
-  const limitNum = parseInt(limit, 10) || 10;
+  const { page: pageNum, limit: limitNum, skip } = parsePagination(req.query);
   const filter = {
     companyId,
     recipientCompany: companyId,
@@ -163,7 +162,7 @@ const getCompanyNotifications = asyncHandler(async (req, res) => {
 
   const allNotifications = await Notification.find(filter)
     .sort({ createdAt: -1 })
-    .skip((pageNum - 1) * limitNum)
+    .skip(skip)
     .limit(limitNum);
 
   const totalNotifications = await Notification.countDocuments(filter);

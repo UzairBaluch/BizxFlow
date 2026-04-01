@@ -6,6 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
+import { parsePagination } from "../utils/parsePagination.js";
 
 const DIRECTORY_ROLES = ["Manager", "Employee"];
 
@@ -71,9 +72,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
   if (req.user && req.user.role !== "Manager") {
     throw new ApiError(403, "Unauthorized request");
   }
-  const { page, limit, search } = req.query;
-  const pageNum = parseInt(page) || 1;
-  const limitNum = parseInt(limit) || 10;
+  const { search } = req.query;
+  const { page: pageNum, limit: limitNum, skip } = parsePagination(req.query);
   const filter = { companyId };
   if (search) {
     filter.fullName = { $regex: search, $options: "i" };
@@ -81,7 +81,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
   const allUsers = await User.find(filter)
     .select("-password -refreshToken")
-    .skip((pageNum - 1) * limitNum)
+    .skip(skip)
     .limit(limitNum);
   const totalUsers = await User.countDocuments(filter);
 

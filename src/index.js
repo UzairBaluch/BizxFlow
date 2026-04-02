@@ -1,6 +1,17 @@
 import "dotenv/config";
+import dns from "node:dns";
 import { createServer } from "node:http";
 import connectDb from "./db/index.js";
+
+// Railway (and some clouds) can prefer IPv6; Atlas SRV often works more reliably with IPv4 first.
+if (process.env.RAILWAY_ENVIRONMENT) {
+  try {
+    dns.setDefaultResultOrder("ipv4first");
+    console.log("[BizxFlow] DNS result order: ipv4first (Railway)");
+  } catch {
+    /* ignore on very old Node */
+  }
+}
 import { app } from "./app.js";
 import { initSocketIO } from "./socket/io.js";
 

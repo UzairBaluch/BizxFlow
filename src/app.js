@@ -34,18 +34,19 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.get("/api-docs.json", (_, res) => res.json(swaggerSpec));
-app.get("/api-docs", (_, res) => res.redirect(302, "/api-docs/"));
 
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(null, {
-    swaggerOptions: {
-      url: "/api-docs.json",
-      persistAuthorization: true,
-    },
-  })
-);
+const swaggerUiHandler = swaggerUi.setup(null, {
+  swaggerOptions: {
+    url: "/api-docs.json",
+    persistAuthorization: true,
+  },
+});
+
+// Order matters: serve HTML for /api-docs/ BEFORE swaggerUi.serve's static middleware,
+// or express.static redirects /api-docs/ → /api-docs and fights app redirect → /api-docs/ (302 loop).
+app.get("/api-docs/", swaggerUiHandler);
+app.get("/api-docs", (_req, res) => res.redirect(308, "/api-docs/"));
+app.use("/api-docs", swaggerUi.serve);
 
 app.use("/api/v1/users", userRouter);
 

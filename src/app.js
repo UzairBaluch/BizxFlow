@@ -9,6 +9,7 @@ import { swaggerSpec } from "./config/swagger.js";
 import { ORIGIN } from "../src/constants.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.get("/", (_, res) => res.json({ ok: true, message: "BizxFlow API" }));
 app.get("/health", (_, res) => res.json({ status: "ok" }));
@@ -20,16 +21,31 @@ app.use(
     credentials: true,
   })
 );
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.get("/api-docs.json", (_, res) => res.json(swaggerSpec));
-// Trailing slash required: HTML uses relative ./swagger-ui.css; /api-docs (no slash) resolves assets to /swagger-ui.css (404).
 app.get("/api-docs", (_, res) => res.redirect(302, "/api-docs/"));
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(null, {
+    swaggerOptions: {
+      url: "/api-docs.json",
+      persistAuthorization: true,
+    },
+  })
+);
 
 app.use("/api/v1/users", userRouter);
 

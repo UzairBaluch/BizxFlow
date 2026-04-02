@@ -25,10 +25,10 @@ const options = {
       ].join("\n"),
     },
     servers: [
-      { url: "http://localhost:8000", description: "Local" },
       {
-        url: "https://bizxflow-production.up.railway.app",
-        description: "Production (Railway)",
+        url: "/",
+        description:
+          "Same origin as this API (local or Railway). Open Swagger from the host you want Try it out to hit.",
       },
     ],
     components: {

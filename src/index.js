@@ -22,7 +22,7 @@ try {
 } catch (err) {
   console.error("[BizxFlow] MongoDB connection failed:", err.message);
   console.error(
-    "Atlas: confirm cluster is running (not paused), user/password in URI, and your network allows outbound to mongodb.net:27017."
+    "Checklist: (1) Railway Variables → MONGODB_URI exact name, new deploy after save. (2) Atlas same project as cluster → Network Access 0.0.0.0/0 Active. (3) Cluster not paused. (4) Password URL-encoded if it contains @ # % / : . (5) See log line 'MongoDB URI host:' — must match your cluster hostname."
   );
   process.exit(1);
 }

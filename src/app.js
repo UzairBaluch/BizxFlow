@@ -42,8 +42,6 @@ const swaggerUiHandler = swaggerUi.setup(null, {
   },
 });
 
-// Order matters: serve HTML for /api-docs/ BEFORE swaggerUi.serve's static middleware,
-// or express.static redirects /api-docs/ → /api-docs and fights app redirect → /api-docs/ (302 loop).
 app.get("/api-docs/", swaggerUiHandler);
 app.get("/api-docs", (_req, res) => res.redirect(308, "/api-docs/"));
 app.use("/api-docs", swaggerUi.serve);
